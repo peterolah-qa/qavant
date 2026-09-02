@@ -610,7 +610,14 @@
 
   .hero-sub{
     font-size:clamp(16px,1.3vw,19px);color:var(--ink-2);
-    max-width:560px;margin:0 0 44px;line-height:1.65;
+    max-width:560px;margin:0 0 18px;line-height:1.65;
+  }
+  .hero-punch{
+    font-family:'JetBrains Mono',monospace;
+    font-size:clamp(11px,0.95vw,12.5px);
+    letter-spacing:0.08em;text-transform:uppercase;
+    color:var(--ink-dim);max-width:560px;
+    margin:26px 0 44px;line-height:1.95;
   }
   .hero-actions{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
   /* ISTQB certification badge — own branded chip (official logo is trademarked) */
@@ -1957,6 +1964,8 @@
     letter-spacing:0.04em;
   }
   .metric-trend .up{color:var(--green)}
+  .metric-age{opacity:0.75}
+  .metric-age.stale{color:#d9a441;opacity:1}
 
   /* ============== MISSION / MANIFESTO ============== */
   .mission{
@@ -2418,8 +2427,12 @@
       font-size:15.5px;
       line-height:1.6;
       max-width:none;
-      margin:0 0 32px;
+      margin:0 0 14px;
       color:var(--ink-2);
+    }
+    .hero-punch{
+      font-size:10.5px;max-width:none;
+      margin:20px 0 32px;line-height:1.9;
     }
 
     /* CTA buttons: side by side at most viewports, more elegant */
@@ -3229,7 +3242,13 @@
         </h1>
 
         <p class="hero-sub reveal" data-i18n="hero.sub">
-          Volám sa Peter Oláh. Ako freelance QA automation engineer prinášam do projektov pokoj. Tri roky v slovenskom bankovom sektore ma naučili stavať frameworky, ktoré prežijú akýkoľvek piatkový deployment a odhalia detaily, ktoré ostatným utiekli.
+          Som Peter Oláh, freelance QA automation engineer. Staviam spoľahlivú a udržateľnú testovaciu automatizáciu.
+        </p>
+        <p class="hero-sub reveal" data-i18n="hero.sub2">
+          S viac než 3 rokmi skúseností v bankovom sektore pokrývam UI, API aj integračné testovanie — komplexné požiadavky mením na automatizované kontroly, ktoré dávajú vývojovému tímu rýchlu a použiteľnú spätnú väzbu.
+        </p>
+        <p class="hero-punch reveal" data-i18n="hero.punch">
+          Menej manuálneho opakovania. Skoršie odhalenie chýb. Väčšia istota pri každom release.
         </p>
 
         <div class="hero-actions reveal">
@@ -3262,9 +3281,9 @@
               <span class="demo-tag demo-ui" data-i18n="m.demo">DEMO</span>
             </div>
             <div class="metric-value" id="metricTests">
-              0<span class="unit">/145</span>
+              0<span class="unit" id="metricTestsTotal"></span>
             </div>
-            <div class="metric-trend"><span id="metricUiMeta">— · </span><span data-i18n="m.runs">runs</span></div>
+            <div class="metric-trend"><span id="metricUiMeta">— · </span><span data-i18n="m.runs">runs</span><span class="metric-age" id="metricUiAge"></span></div>
           </div>
           <div class="metric">
             <div class="metric-label">
@@ -3273,9 +3292,9 @@
               <span class="demo-tag demo-api" data-i18n="m.demo">DEMO</span>
             </div>
             <div class="metric-value" id="metricApi">
-              0<span class="unit">/27</span>
+              0<span class="unit" id="metricApiTotal"></span>
             </div>
-            <div class="metric-trend"><span id="metricApiMeta">— · </span><span data-i18n="m.runs">runs</span></div>
+            <div class="metric-trend"><span id="metricApiMeta">— · </span><span data-i18n="m.runs">runs</span><span class="metric-age" id="metricApiAge"></span></div>
           </div>
           <div class="metric">
             <div class="metric-label">
@@ -3285,7 +3304,7 @@
             <div class="metric-value">
               <span class="status">● <span data-i18n="m.available">Available</span></span>
             </div>
-            <div class="metric-trend" data-i18n="m.from">from June 2026</div>
+            <div class="metric-trend" data-i18n="m.from">ihneď k dispozícii</div>
           </div>
         </div>
       </div>
@@ -3914,7 +3933,7 @@ const dict = {
     "mission.p4.t":"Honest work, honest pricing",
     "mission.p4.d":"Fixné ceny, jasný rozsah, žiadne hodinové faktúry s prekvapeniami na konci mesiaca.",
     "m.tests":"Testy","m.uitests":"UI testy · Playwright","m.apitests":"API testy · Newman","m.passrate":"Pass rate","m.status":"Stav","m.demo":"DEMO",
-    "m.weekly":"posledných 7 dní","m.runs":"behov","m.available":"Voľný","m.from":"od júna 2026",
+    "m.weekly":"posledných 7 dní","m.runs":"behov","m.available":"Voľný","m.from":"ihneď k dispozícii",
     "proc.kicker":"Spolupráca",
     "proc.t1":"Bez prekvapení.","proc.t2":"Predvídateľný proces.",
     "proc.intro":"Štyri jasné kroky od prvého emailu po odovzdanie. Vieš čo sa kedy deje, ja viem čo sa odo mňa očakáva. Žiadny black-box freelancer.",
@@ -3927,8 +3946,10 @@ const dict = {
     "hero.eyebrow":"QA Engineering · Bratislava · Available now",
     "hero.t1":"Release","hero.t2":"bez stresu.",
     "hero.t4":"QA","hero.t5":"kryje chrbát.",
-    "hero.sub":"Volám sa Peter Oláh. Ako freelance QA automation engineer prinášam do projektov pokoj. Tri roky v slovenskom bankovom sektore ma naučili stavať frameworky, ktoré prežijú akýkoľvek piatkový deployment a odhalia detaily, ktoré ostatným utiekli.",
-    "hero.cta1":"Začnime spolupracovať","hero.cta2":"Pozri služby",
+    "hero.sub":"Som Peter Oláh, freelance QA automation engineer. Staviam spoľahlivú a udržateľnú testovaciu automatizáciu.",
+    "hero.sub2":"S viac než 3 rokmi skúseností v bankovom sektore pokrývam UI, API aj integračné testovanie — komplexné požiadavky mením na automatizované kontroly, ktoré dávajú vývojovému tímu rýchlu a použiteľnú spätnú väzbu.",
+    "hero.punch":"Menej manuálneho opakovania. Skoršie odhalenie chýb. Väčšia istota pri každom release.",
+    "hero.cta1":"Poďme spolupracovať","hero.cta2":"Pozri služby",
     "services.kicker":"Služby","services.t1":"Tri spôsoby,","services.t2":"ako pomôžem.",
     "show.kicker":"Framework","show.t1":"Pohľad pod","show.t2":"kapotu.",
     "show.intro":"Ukážka štruktúry, ktorú používam pri stavaní automation frameworkov. Skutočný kód v projektoch je bohatší o doménovú logiku — toto je sanitizovaná demo verzia.",
@@ -3986,7 +4007,7 @@ const dict = {
     "mission.p4.t":"Honest work, honest pricing",
     "mission.p4.d":"Fixed prices, clear scope, no hourly invoices with end-of-month surprises.",
     "m.tests":"Tests","m.uitests":"UI tests · Playwright","m.apitests":"API tests · Newman","m.passrate":"Pass rate","m.status":"Status","m.demo":"DEMO",
-    "m.weekly":"last 7 days","m.runs":"runs","m.available":"Available","m.from":"from June 2026",
+    "m.weekly":"last 7 days","m.runs":"runs","m.available":"Available","m.from":"available immediately",
     "proc.kicker":"How we work",
     "proc.t1":"No surprises.","proc.t2":"Predictable process.",
     "proc.intro":"Four clear steps from first email to handover. You know what happens when, I know what's expected of me. No black-box freelancer.",
@@ -3999,8 +4020,10 @@ const dict = {
     "hero.eyebrow":"QA Engineering · Bratislava · Available now",
     "hero.t1":"Stress-free","hero.t2":"release.",
     "hero.t4":"QA","hero.t5":"has your back.",
-    "hero.sub":"I'm Peter Oláh. As a freelance QA automation engineer, I bring calm to projects. Three years in the Slovak banking sector taught me to build frameworks that survive any Friday deployment and surface the details everyone else missed.",
-    "hero.cta1":"Start a project","hero.cta2":"See services",
+    "hero.sub":"I'm Peter Oláh, a freelance QA Automation Engineer focused on building reliable, maintainable test automation.",
+    "hero.sub2":"With 3+ years of experience in the banking sector, I work across UI, API and integration testing — turning complex requirements into automated checks that give development teams fast, actionable feedback.",
+    "hero.punch":"Less manual repetition. Earlier defect detection. More confidence in every release.",
+    "hero.cta1":"Let's work together","hero.cta2":"See services",
     "services.kicker":"Services","services.t1":"Three ways","services.t2":"I can help.",
     "show.kicker":"Framework","show.t1":"A look","show.t2":"under the hood.",
     "show.intro":"A sample of the structure I use when building automation frameworks. The real code in client projects is richer with domain logic — this is a sanitized demo version.",
@@ -4058,7 +4081,7 @@ const dict = {
     "mission.p4.t":"Ehrliche Arbeit, ehrliche Preise",
     "mission.p4.d":"Festpreise, klarer Umfang, keine Stundenrechnungen mit Überraschungen am Monatsende.",
     "m.tests":"Tests","m.uitests":"UI-Tests · Playwright","m.apitests":"API-Tests · Newman","m.passrate":"Pass Rate","m.status":"Status","m.demo":"DEMO",
-    "m.weekly":"letzte 7 Tage","m.runs":"Durchläufe","m.available":"Verfügbar","m.from":"ab Juni 2026",
+    "m.weekly":"letzte 7 Tage","m.runs":"Durchläufe","m.available":"Verfügbar","m.from":"ab sofort",
     "proc.kicker":"Zusammenarbeit",
     "proc.t1":"Keine Überraschungen.","proc.t2":"Vorhersehbarer Prozess.",
     "proc.intro":"Vier klare Schritte von der ersten E-Mail bis zur Übergabe. Sie wissen, was wann passiert — ich weiß, was von mir erwartet wird. Kein Black-Box-Freelancer.",
@@ -4071,8 +4094,10 @@ const dict = {
     "hero.eyebrow":"QA Engineering · Bratislava · Verfügbar",
     "hero.t1":"Stressfreier","hero.t2":"Release.",
     "hero.t4":"QA","hero.t5":"deckt den Rücken.",
-    "hero.sub":"Ich bin Peter Oláh. Als freelance QA Automation Engineer bringe ich Ruhe in Projekte. Drei Jahre im slowakischen Bankensektor haben mich gelehrt, Frameworks zu bauen, die jedes Freitag-Deployment überstehen und Details aufdecken, die allen anderen entgangen sind.",
-    "hero.cta1":"Projekt starten","hero.cta2":"Leistungen ansehen",
+    "hero.sub":"Ich bin Peter Oláh, freiberuflicher QA Automation Engineer mit Fokus auf zuverlässige und wartbare Testautomatisierung.",
+    "hero.sub2":"Mit über 3 Jahren Erfahrung im Bankensektor arbeite ich im UI-, API- und Integrationstesting — ich übersetze komplexe Anforderungen in automatisierte Prüfungen, die Entwicklungsteams schnelles, umsetzbares Feedback geben.",
+    "hero.punch":"Weniger manuelle Wiederholung. Frühere Fehlererkennung. Mehr Sicherheit bei jedem Release.",
+    "hero.cta1":"Lassen Sie uns zusammenarbeiten","hero.cta2":"Leistungen ansehen",
     "services.kicker":"Leistungen","services.t1":"Drei Wege,","services.t2":"wie ich helfe.",
     "show.kicker":"Framework","show.t1":"Ein Blick","show.t2":"unter die Haube.",
     "show.intro":"Eine Probe der Struktur, die ich beim Aufbau von Automation-Frameworks verwende. Der reale Code in Projekten ist reicher an Domänenlogik — dies ist eine sanitisierte Demo-Version.",
@@ -4194,10 +4219,21 @@ setTimeout(()=>{
   }, 6000);
 }, 4000);
 
+// ============== SUITE FACTS — SINGLE SOURCE OF TRUTH ==============
+// Every test count on this page comes from here: the terminal demo, the
+// /total denominators in the live-metric cards, and the offline fallbacks.
+// Keep in sync with the README table. Change the numbers HERE and nowhere else.
+const SUITE = {
+  ui:  { total: 126, passRate: 100, runs: 24, workers: 2, browsers: 3, duration: '5.0m' },
+  api: { total: 27,  passRate: 100, runs: 82 }
+};
+// A published status.json older than this is shown as stale, not as fresh CI data.
+const STALE_AFTER_DAYS = 14;
+
 const termLines = [
   // mirrors the real qavant-tests suite that feeds the live metrics above
   {t:'<span class="prompt">$</span> <span class="cmd">npx playwright test</span>',d:0},
-  {t:'<span class="dim">Running 140 tests using 2 workers · 5 browsers</span>',d:420},
+  {t:`<span class="dim">Running ${SUITE.ui.total} tests using ${SUITE.ui.workers} workers · ${SUITE.ui.browsers} browsers</span>`,d:420},
   {t:'› smoke › skeleton is intact............<span class="ok">PASS</span> <span class="dim">3.1s</span>',d:340},
   {t:'› i18n › SK/EN/DE completeness..........<span class="ok">PASS</span> <span class="dim">11.4s</span>',d:280},
   {t:'› a11y › axe-core WCAG 2 AA.............<span class="fail">FAIL</span> <span class="dim">contrast 3.43</span>',d:340},
@@ -4205,7 +4241,7 @@ const termLines = [
   {t:'› a11y › axe-core WCAG 2 AA.............<span class="ok">PASS</span> <span class="dim">9.8s</span>',d:380},
   {t:'› contact-form › Netlify POST...........<span class="ok">PASS</span> <span class="dim">6.9s</span>',d:280},
   {t:'› responsive › no overflow @360px.......<span class="ok">PASS</span> <span class="dim">5.3s</span>',d:280},
-  {t:'<span class="dim">140 passed (6.2m)</span>',d:400},
+  {t:`<span class="dim">${SUITE.ui.total} passed (${SUITE.ui.duration})</span>`,d:400},
   {t:'<span class="ok">✓ status.json published → live metrics updated</span>',d:220},
   {t:'<span class="prompt">$</span> <span class="cursor-blink"></span>',d:250},
 ];
@@ -4363,8 +4399,13 @@ const USE_LIVE_METRICS = true;
 const METRICS_URL = 'https://raw.githubusercontent.com/peterolah-qa/qavant-tests/main/status.json';
 const API_METRICS_URL = 'https://raw.githubusercontent.com/peterolah-qa/qavant-api-tests/main/status.json';
 
-const uiFallback  = { testsRun: 145, testsTotal: 145, passRate: 99.3, totalRuns: 3, live: false };
-const apiFallback = { testsRun: 27,  testsTotal: 27,  passRate: 100,  totalRuns: 1, live: false };
+// Fallbacks are derived from SUITE — no separate numbers to drift out of sync.
+const uiFallback  = { testsRun: SUITE.ui.total,  testsTotal: SUITE.ui.total,
+                      passRate: SUITE.ui.passRate,  totalRuns: SUITE.ui.runs,
+                      live: false, stale: false, lastRun: null };
+const apiFallback = { testsRun: SUITE.api.total, testsTotal: SUITE.api.total,
+                      passRate: SUITE.api.passRate, totalRuns: SUITE.api.runs,
+                      live: false, stale: false, lastRun: null };
 
 async function fetchStatus(url, fallback){
   if(!USE_LIVE_METRICS) return { ...fallback };
@@ -4372,17 +4413,44 @@ async function fetchStatus(url, fallback){
     const r = await fetch(url, { cache: 'no-store' });
     if(!r.ok) throw new Error('HTTP ' + r.status);
     const d = await r.json();
+    const lastRun = d.lastRun ? new Date(d.lastRun) : null;
+    const ageDays = (lastRun && !isNaN(lastRun))
+      ? (Date.now() - lastRun.getTime()) / 86400000
+      : null;
     return {
       testsRun:   Number.isFinite(d.passed)   ? d.passed   : fallback.testsRun,
       testsTotal: Number.isFinite(d.total)    ? d.total    : fallback.testsTotal,
       passRate:   Number.isFinite(d.passRate) ? d.passRate : fallback.passRate,
       totalRuns:  Number.isFinite(d.runs)     ? d.runs     : fallback.totalRuns,
-      live: true
+      live: true,
+      // an old status.json is real data, but it is not a fresh run — say so
+      stale: ageDays === null || ageDays > STALE_AFTER_DAYS,
+      lastRun
     };
   }catch(e){
     // graceful fallback — the widget still works; DEMO stays for this source
     return { ...fallback };
   }
+}
+
+// Render the /total denominators before any fetch, so the number never
+// jumps from a placeholder to the real value mid-animation.
+function paintTotals(){
+  const ui = document.getElementById('metricTestsTotal');
+  const api = document.getElementById('metricApiTotal');
+  if(ui)  ui.textContent  = '/' + SUITE.ui.total;
+  if(api) api.textContent = '/' + SUITE.api.total;
+}
+paintTotals();
+
+function paintAge(el, src){
+  if(!el) return;
+  if(!src.live || !src.lastRun){ el.textContent = ''; return; }
+  const d = src.lastRun;
+  const label = d.toLocaleDateString(document.documentElement.lang || 'sk', { day:'numeric', month:'short' });
+  el.textContent = ' · ' + label;
+  el.classList.toggle('stale', !!src.stale);
+  el.title = d.toLocaleString();
 }
 
 function animateMetric(el, target, opts={}){
@@ -4411,19 +4479,21 @@ const metricsIO = new IntersectionObserver(async entries=>{
 
       animateMetric(v=>{
         document.getElementById('metricTests').innerHTML =
-          `${Math.round(v)}<span class="unit">/${ui.testsTotal}</span>`;
+          `${Math.round(v)}<span class="unit" id="metricTestsTotal">/${ui.testsTotal}</span>`;
       }, ui.testsRun);
       animateMetric(v=>{
         document.getElementById('metricApi').innerHTML =
-          `${Math.round(v)}<span class="unit">/${api.testsTotal}</span>`;
+          `${Math.round(v)}<span class="unit" id="metricApiTotal">/${api.testsTotal}</span>`;
       }, api.testsRun);
 
       document.getElementById('metricUiMeta').textContent  = `${ui.passRate}% · ${ui.totalRuns} `;
       document.getElementById('metricApiMeta').textContent = `${api.passRate}% · ${api.totalRuns} `;
+      paintAge(document.getElementById('metricUiAge'),  ui);
+      paintAge(document.getElementById('metricApiAge'), api);
 
-      // drop DEMO per source — only data that really came from CI loses the tag
-      if(ui.live)  document.querySelectorAll('.demo-tag.demo-ui').forEach(t=> t.style.display='none');
-      if(api.live) document.querySelectorAll('.demo-tag.demo-api').forEach(t=> t.style.display='none');
+      // drop DEMO per source — only a fresh CI run loses the tag; stale data keeps it
+      if(ui.live  && !ui.stale)  document.querySelectorAll('.demo-tag.demo-ui').forEach(t=> t.style.display='none');
+      if(api.live && !api.stale) document.querySelectorAll('.demo-tag.demo-api').forEach(t=> t.style.display='none');
     }
   }
 }, { threshold: 0.3 });
