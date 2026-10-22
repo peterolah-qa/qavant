@@ -95,6 +95,7 @@
     --bg-2:#0E131A;
     --bg-3:#131922;
     --surface:#131922;
+    --bg-term:#05080B;
     --ink:#F8FAFC;
     --ink-2:#C2CCD9;
     --ink-dim:#94A3B8;
@@ -1360,6 +1361,15 @@
   }
   .ide-status .ok{color:var(--green)}
 
+  /* per-suite editor chrome (JOURNAL D9) */
+  .ide[data-editor="idea"] .ide-tab.active{box-shadow:inset 0 -2px 0 var(--data)}
+  .ide[data-editor="vscode"] .ide-tab.active{box-shadow:inset 0 1px 0 var(--data);background:var(--bg)}
+  .ide[data-editor="vscode"] .ide-status{background:rgb(var(--data-rgb) / 0.14);color:var(--ink-2)}
+  .ide[data-editor="cli"] .ide-code{background:var(--bg-term)}
+  .ide[data-editor="cli"] .ide-code .ln::before{opacity:.35}
+  .ide[data-editor="cli"] .ide-tab.active{box-shadow:inset 0 -2px 0 var(--ink-dim)}
+  .ide[data-editor="cli"] .ide-code .num{color:var(--mint)}   /* ✓ = passed assertion */
+
   /* Tags row under IDE */
   .showcase-meta{
     display:grid;
@@ -1368,6 +1378,35 @@
     margin-top:32px;
   }
   @media (max-width:900px){.showcase-meta{grid-template-columns:1fr}}
+
+  /* service chips — real checkboxes, one shared name (JOURNAL D14) */
+  fieldset.chips{border:0;padding:0;margin:0 0 18px;min-width:0}
+  fieldset.chips legend{padding:0;margin-bottom:10px}
+  .chip-row{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{position:relative;display:inline-flex;cursor:pointer;text-transform:none;letter-spacing:0}
+  .chip input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+  .chip span{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border:1px solid var(--line-2);border-radius:999px;
+    font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-2);background:var(--bg);transition:border-color .2s var(--ease),color .2s var(--ease)}
+  .chip span::before{content:"+";color:var(--ink-dim)}
+  .chip:hover span{border-color:rgb(var(--data-rgb) / 0.5);color:var(--ink)}
+  .chip input:checked + span{border-color:var(--data);color:var(--ink);background:rgb(var(--data-rgb) / 0.10)}
+  .chip input:checked + span::before{content:"✓";color:var(--data)}
+  .chip input:focus-visible + span{outline:2px solid var(--data);outline-offset:2px}
+  .contact-meta .row a{color:var(--ink);text-decoration:none;border-bottom:1px dashed var(--line-2)}
+  .contact-meta .row a:hover,.contact-meta .row a:focus-visible{color:var(--data);border-color:var(--data)}
+
+  /* ============== 6-LAYER ARCHITECTURE MATRIX ============== */
+  .arch-matrix{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:32px;counter-reset:layer}
+  @media (max-width:900px){.arch-matrix{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media (max-width:560px){.arch-matrix{grid-template-columns:1fr}}
+  .layer{position:relative;padding:18px 18px 20px;border:1px solid var(--line-2);border-radius:var(--radius);background:var(--surface);display:flex;flex-direction:column;gap:8px}
+  .layer:hover{border-color:rgb(var(--data-rgb) / 0.35)}
+  .layer-head{display:flex;align-items:center;gap:10px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+  .layer-idx{color:var(--data)}
+  .layer-name{color:var(--ink)}
+  .layer-tech{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-dim)}
+  .layer h4{font-size:15px;color:var(--ink);font-weight:600;margin-top:4px}
+  .layer p{font-size:13px;line-height:1.6;color:var(--ink-2)}
 
   /* ============== MID-PAGE CTA ============== */
   .mid-cta{
@@ -1620,9 +1659,13 @@
   }
   .fw-tab:hover .fw-icon{color:var(--accent-2)}
   .fw-tab.active{
-    background:linear-gradient(135deg,rgb(var(--data-rgb) / 0.15),rgb(var(--data-rgb) / 0.1));
-    border-color:var(--accent);
+    background:var(--surface);
+    border-color:rgb(var(--mint-rgb) / 0.55);
     color:var(--ink);
+  }
+  .fw-tab.active::after{                 /* mint indicator (JOURNAL D10) */
+    content:"";position:absolute;left:14px;right:14px;bottom:0;height:2px;
+    background:var(--mint);border-radius:2px 2px 0 0;
   }
   .fw-tab.active .fw-icon{color:var(--accent-2)}
   .fw-tab .fw-meta{
@@ -1893,6 +1936,13 @@
     content:"";width:24px;height:1px;background:var(--ink-dim);
   }
 
+  /* manifesto merged into Background (JOURNAL D7) */
+  .manifesto{margin:72px 0 56px}
+  .manifesto .mission-kicker{margin-bottom:20px}
+  .manifesto .mission-kicker::before{display:none}
+  .manifesto .principles{border-top:0;padding-top:0;margin-top:0;gap:14px}
+  .manifesto .principle{padding:18px 18px 20px 30px;border:1px solid var(--line-2);border-radius:var(--radius);background:var(--surface)}
+  .manifesto .principle::before{left:18px;top:24px}
   /* principles row below */
   .principles{
     display:grid;
@@ -2085,7 +2135,7 @@
 
   form{display:flex;flex-direction:column;gap:20px}
   .field{display:flex;flex-direction:column;gap:8px}
-  label{
+  label,legend{
     font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink-dim);
     text-transform:uppercase;letter-spacing:0.16em;
   }
@@ -3264,21 +3314,21 @@
     </div>
 
     <div class="fw-tabs reveal">
-      <button class="fw-tab active" data-fw="selenium" data-cursor="hover">
+      <button class="fw-tab active" data-fw="selenium" aria-pressed="true" data-cursor="hover">
         <span class="fw-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M16 18l6-6-6-6"/><path d="M8 6l-6 6 6 6"/></svg>
         </span>
         Selenium Java
         <span class="fw-meta">· UI</span>
       </button>
-      <button class="fw-tab" data-fw="api" data-cursor="hover">
+      <button class="fw-tab" data-fw="api" aria-pressed="false" data-cursor="hover">
         <span class="fw-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 9h16M4 15h16M10 3l-2 18M16 3l-2 18"/></svg>
         </span>
         REST API
         <span class="fw-meta">· Newman</span>
       </button>
-      <button class="fw-tab" data-fw="playwright" data-cursor="hover">
+      <button class="fw-tab" data-fw="playwright" aria-pressed="false" data-cursor="hover">
         <span class="fw-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg>
         </span>
@@ -3287,10 +3337,10 @@
       </button>
     </div>
 
-    <div class="ide reveal" id="ide">
+    <div class="ide reveal" id="ide" data-editor="idea">
       <div class="ide-bar">
         <span class="d r"></span><span class="d y"></span><span class="d g"></span>
-        <span class="title"><b id="ideProjectName">qavant-selenium</b> — IntelliJ IDEA</span>
+        <span class="title"><b id="ideProjectName">qavant-selenium</b> — <span id="ideEditorName">IntelliJ IDEA</span></span>
         <a class="ide-repo" id="ideRepoLink" href="https://github.com/peterolah-qa/qavant-selenium" target="_blank" rel="noopener" data-cursor="hover">GitHub ↗</a>
         <div class="view-toggle" role="group" aria-label="View mode">
           <button class="active" data-view="code" data-cursor="hover">
@@ -3423,27 +3473,42 @@
       </div>
     </div>
 
-    <div class="showcase-meta reveal">
-      <div class="meta-card">
-        <span class="icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-        </span>
+    <div class="arch-matrix reveal" id="archMatrix">
+      <div class="layer">
+        <div class="layer-head"><span class="layer-idx">L1</span><span class="layer-name">Tests</span></div>
+        <span class="layer-tech">@Test · *.spec.ts · collection</span>
+        <h4 data-i18n="mx.l1.t">Testy hovoria jazykom biznisu</h4>
+        <p data-i18n="mx.l1.d">Test popisuje, čo používateľ robí a čo očakáva. Žiadne selektory, žiadne čakanie — len zámer a assertion.</p>
+      </div>
+      <div class="layer">
+        <div class="layer-head"><span class="layer-idx">L2</span><span class="layer-name">Page Objects</span></div>
+        <span class="layer-tech">BasePage · HomePage</span>
         <h4 data-i18n="show.m1.title">Page Object Model</h4>
         <p data-i18n="show.m1.desc">Každá stránka aplikácie je samostatná trieda. Testy nikdy nehľadajú elementy priamo — to je zodpovednosť page objektu.</p>
       </div>
-      <div class="meta-card">
-        <span class="icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
-        </span>
+      <div class="layer">
+        <div class="layer-head"><span class="layer-idx">L3</span><span class="layer-name">Test Data</span></div>
+        <span class="layer-tech">fixtures · constants · env</span>
+        <h4 data-i18n="mx.l3.t">Dáta oddelené od logiky</h4>
+        <p data-i18n="mx.l3.d">Fixtures, konštanty a prostredia na jednom mieste. Jedna premenná prepne suitu medzi prod a lokálnym buildom.</p>
+      </div>
+      <div class="layer">
+        <div class="layer-head"><span class="layer-idx">L4</span><span class="layer-name">Core Engine</span></div>
+        <span class="layer-tech">DriverFactory · explicit waits</span>
         <h4 data-i18n="show.m2.title">Explicit Waits Only</h4>
         <p data-i18n="show.m2.desc">Žiadne Thread.sleep(). Každá akcia čaká presne na to, čo potrebuje. Výsledok: testy bežia rýchlejšie a nepadajú náhodne.</p>
       </div>
-      <div class="meta-card">
-        <span class="icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-        </span>
+      <div class="layer">
+        <div class="layer-head"><span class="layer-idx">L5</span><span class="layer-name">CI/CD Runner</span></div>
+        <span class="layer-tech">GitHub Actions · daily + on push</span>
         <h4 data-i18n="show.m3.title">CI-First Architecture</h4>
         <p data-i18n="show.m3.desc">Framework je navrhnutý ako prvé pre Jenkins/GitLab CI, nie pre lokálny vývoj. Allure reporty, paralelné spúšťanie, retry logika.</p>
+      </div>
+      <div class="layer">
+        <div class="layer-head"><span class="layer-idx">L6</span><span class="layer-name">Telemetry</span></div>
+        <span class="layer-tech">status.json → this page</span>
+        <h4 data-i18n="mx.l6.t">Každý beh zanechá dôkaz</h4>
+        <p data-i18n="mx.l6.d">Po každom behu CI publikuje status.json a report. Čísla na tejto stránke sú presne tie, ktoré CI nahlásilo — aj keď je beh červený.</p>
       </div>
     </div>
 
@@ -3460,16 +3525,6 @@
     </div>
   </div>
 </section>
-
-<section class="interlude reveal" id="interlude" aria-hidden="true">
-  <p class="interlude-text">
-    <span class="word" data-i18n="interlude.s1">99% test framework-ov zlyhá</span>
-    <span class="word" data-i18n="interlude.s2">nie preto, že kód je zlý.</span>
-    <em class="word" data-i18n="interlude.s3">Zlyhá preto, že ho nikto nerozumie.</em>
-  </p>
-</section>
-
-<div class="divider reveal"></div>
 
 <section id="about">
   <div class="container">
@@ -3539,41 +3594,9 @@
   .nav-li svg{width:17px;height:17px;fill:currentColor;}
   .nav-li:hover{color:#fff;background:#0A66C2;}
 </style>
-<div class="li-banner">
-  <a class="li-card" href="https://www.linkedin.com/in/peter-olah-8ab858137/" target="_blank" rel="noopener noreferrer" data-cursor="hover" aria-label="Peter Oláh na LinkedIn">
-    <span class="li-icon" aria-hidden="true">
-      <svg viewBox="0 0 24 24"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.55V9h3.57v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.22.79 24 1.77 24h20.45c.98 0 1.78-.78 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>
-    </span>
-    <span class="li-text">
-      <span class="li-kicker">Let's connect</span>
-      <span class="li-name">Peter Oláh</span>
-      <span class="li-handle">linkedin.com/in/peter-olah</span>
-    </span>
-    <span class="li-arrow" aria-hidden="true">&rarr;</span>
-  </a>
-</div>
-</section>
-
-<div class="divider reveal"></div>
-
-<!-- ============== CASE STUDY ============== -->
-
-<section class="mission zone-light" id="mission">
-  <div class="container">
-    <div class="mission-inner reveal">
-      <div class="mission-kicker"><span data-i18n="mission.kicker">Manifesto</span></div>
-
-      <p class="mission-statement">
-        <span data-i18n="mission.s1">QA pre mňa nie je o automatizácii a nástrojoch. Tie sa menia.</span>
-        <em data-i18n="mission.s2">Je o zodpovednosti voči používateľovi a rešpekte k práci tímu.</em>
-        <span data-i18n="mission.s3">Som tu na to, aby som zložité veci robil spoľahlivými.</span>
-      </p>
-
-      <div class="mission-sig">
-        <span data-i18n="mission.sig">Peter · Qavant</span>
-      </div>
-
-      <div class="principles">
+<div class="container"><div class="manifesto reveal" id="mission">
+  <div class="mission-kicker"><span data-i18n="mission.kicker">Manifesto</span></div>
+  <div class="principles">
         <div class="principle">
           <div class="principle-num">01</div>
           <h5 data-i18n="mission.p1.t">Detail je profesia</h5>
@@ -3595,8 +3618,20 @@
           <p data-i18n="mission.p4.d">Fixné ceny, jasný rozsah, žiadne hodinové faktúry s prekvapeniami na konci mesiaca.</p>
         </div>
       </div>
-    </div>
-  </div>
+</div></div>
+<div class="li-banner">
+  <a class="li-card" href="https://www.linkedin.com/in/peter-olah-8ab858137/" target="_blank" rel="noopener noreferrer" data-cursor="hover" aria-label="Peter Oláh na LinkedIn">
+    <span class="li-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.55V9h3.57v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.22.79 24 1.77 24h20.45c.98 0 1.78-.78 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>
+    </span>
+    <span class="li-text">
+      <span class="li-kicker">Let's connect</span>
+      <span class="li-name">Peter Oláh</span>
+      <span class="li-handle">linkedin.com/in/peter-olah</span>
+    </span>
+    <span class="li-arrow" aria-hidden="true">&rarr;</span>
+  </a>
+</div>
 </section>
 
 <div class="divider reveal"></div>
@@ -3641,19 +3676,6 @@
       </div>
     </div>
 
-    <div class="mid-cta mid-cta-dark reveal">
-      <div class="mid-cta-inner">
-        <div class="mid-cta-text">
-          <div class="mid-cta-eyebrow" data-i18n="midcta2.eyebrow">PRIPRAVENÝ ZAČAŤ?</div>
-          <h3 class="mid-cta-title" data-i18n="midcta2.title">Vieš čo robím. Vieš ako pracujem.</h3>
-          <p class="mid-cta-desc" data-i18n="midcta2.desc">Posledný krok je jednoduchý — napíš mi pár riadkov o tvojom projekte.</p>
-        </div>
-        <a href="#contact" class="btn btn-primary" data-cursor="hover" data-magnetic>
-          <span data-i18n="midcta2.btn">Začnime</span>
-          <span class="arrow">→</span>
-        </a>
-      </div>
-    </div>
   </div>
 </section>
 
@@ -3667,9 +3689,11 @@
           <p data-i18n="contact.intro">Napíš mi pár riadkov o projekte. Odpovedám zvyčajne do 24 hodín, často skôr.</p>
 
           <div class="contact-meta">
-            <div class="row"><span data-i18n="cm.email">Email</span><span>peterolah@qavant.dev</span></div>
+            <div class="row"><span data-i18n="cm.email">Email</span><a href="mailto:peterolah@qavant.dev">peterolah@qavant.dev</a></div>
             <div class="row"><span data-i18n="cm.loc">Lokalita</span><span>Bratislava · Remote</span></div>
             <div class="row"><span data-i18n="cm.lang">Jazyky</span><span>SK · EN · DE</span></div>
+            <div class="row"><span>GitHub</span><a href="https://github.com/peterolah-qa" target="_blank" rel="noopener">peterolah-qa ↗</a></div>
+            <div class="row"><span>LinkedIn</span><a href="https://www.linkedin.com/in/peter-olah-8ab858137/" target="_blank" rel="noopener">peter-olah ↗</a></div>
             <div class="row"><span data-i18n="cm.status">Stav</span><span style="color:var(--green);display:inline-flex;align-items:center;gap:8px;">● <span data-i18n="cm.statusVal">Prijímam projekty</span></span></div>
           </div>
         </div>
@@ -3694,16 +3718,16 @@
             <input type="text" id="company" name="company" data-cursor="hover" />
           </div>
 
-          <div class="field">
-            <label for="topic" data-i18n="f.topic">Mám záujem o</label>
-            <select id="topic" name="topic" data-cursor="hover">
-              <option data-i18n="f.o1">Test automation framework</option>
-              <option data-i18n="f.o2">API / regression testing</option>
-              <option data-i18n="f.o3">QA audit / consulting</option>
-              <option data-i18n="f.o5" value="framework-access">Request framework sample (GitHub access)</option>
-              <option data-i18n="f.o4">Iné — poviem v správe</option>
-            </select>
-          </div>
+          <fieldset class="field chips" id="topic">
+            <legend data-i18n="f.topic">Mám záujem o</legend>
+            <div class="chip-row">
+              <label class="chip"><input type="checkbox" name="topic" value="framework" checked /><span data-i18n="f.o1">Test automation framework</span></label>
+              <label class="chip"><input type="checkbox" name="topic" value="api" /><span data-i18n="f.o2">API / regression testing</span></label>
+              <label class="chip"><input type="checkbox" name="topic" value="audit" /><span data-i18n="f.o3">QA audit / consulting</span></label>
+              <label class="chip"><input type="checkbox" name="topic" value="framework-access" /><span data-i18n="f.o5">Request framework sample (GitHub access)</span></label>
+              <label class="chip"><input type="checkbox" name="topic" value="other" /><span data-i18n="f.o4">Iné — poviem v správe</span></label>
+            </div>
+          </fieldset>
 
           <div class="field">
             <label for="message" data-i18n="f.msg">Správa</label>
@@ -3784,7 +3808,7 @@ const dict = {
     "services.kicker":"Služby","services.t1":"Tri spôsoby,","services.t2":"ako pomôžem.",
     "show.kicker":"Framework","show.t1":"Pohľad pod","show.t2":"kapotu.",
     "show.intro":"Ukážka štruktúry, ktorú používam pri stavaní automation frameworkov. Skutočný kód v projektoch je bohatší o doménovú logiku — toto je sanitizovaná demo verzia.",
-    "show.m1.title":"Page Object Model",
+    "mx.l1.t":"Testy hovoria jazykom biznisu","mx.l1.d":"Test popisuje, čo používateľ robí a čo očakáva. Žiadne selektory, žiadne čakanie — len zámer a assertion.","mx.l3.t":"Dáta oddelené od logiky","mx.l3.d":"Fixtures, konštanty a prostredia na jednom mieste. Jedna premenná prepne suitu medzi prod a lokálnym buildom.","mx.l6.t":"Každý beh zanechá dôkaz","mx.l6.d":"Po každom behu CI publikuje status.json a report. Čísla na tejto stránke sú presne tie, ktoré CI nahlásilo — aj keď je beh červený.","show.m1.title":"Page Object Model",
     "show.m1.desc":"Každá stránka aplikácie je samostatná trieda. Testy nikdy nehľadajú elementy priamo — to je zodpovednosť page objektu.",
     "show.m2.title":"Iba Explicit Waits",
     "show.m2.desc":"Žiadne Thread.sleep(). Každá akcia čaká presne na to, čo potrebuje. Výsledok: testy bežia rýchlejšie a nepadajú náhodne.",
@@ -3858,7 +3882,7 @@ const dict = {
     "services.kicker":"Services","services.t1":"Three ways","services.t2":"I can help.",
     "show.kicker":"Framework","show.t1":"A look","show.t2":"under the hood.",
     "show.intro":"A sample of the structure I use when building automation frameworks. The real code in client projects is richer with domain logic — this is a sanitized demo version.",
-    "show.m1.title":"Page Object Model",
+    "mx.l1.t":"Tests speak business","mx.l1.d":"A test describes what the user does and expects. No selectors, no waits — just intent and an assertion.","mx.l3.t":"Data apart from logic","mx.l3.d":"Fixtures, constants and environments in one place. One variable switches the suite between prod and a local build.","mx.l6.t":"Every run leaves proof","mx.l6.d":"After each run CI publishes status.json and a report. The numbers on this page are exactly what CI reported — even when the run is red.","show.m1.title":"Page Object Model",
     "show.m1.desc":"Each application page is its own class. Tests never look up elements directly — that's the page object's job.",
     "show.m2.title":"Explicit Waits Only",
     "show.m2.desc":"No Thread.sleep(). Every action waits exactly for what it needs. Result: tests run faster and don't fail randomly.",
@@ -3932,7 +3956,7 @@ const dict = {
     "services.kicker":"Leistungen","services.t1":"Drei Wege,","services.t2":"wie ich helfe.",
     "show.kicker":"Framework","show.t1":"Ein Blick","show.t2":"unter die Haube.",
     "show.intro":"Eine Probe der Struktur, die ich beim Aufbau von Automation-Frameworks verwende. Der reale Code in Projekten ist reicher an Domänenlogik — dies ist eine sanitisierte Demo-Version.",
-    "show.m1.title":"Page Object Model",
+    "mx.l1.t":"Tests sprechen Business","mx.l1.d":"Ein Test beschreibt, was der Nutzer tut und erwartet. Keine Selektoren, kein Warten — nur Absicht und Assertion.","mx.l3.t":"Daten getrennt von Logik","mx.l3.d":"Fixtures, Konstanten und Umgebungen an einem Ort. Eine Variable schaltet die Suite zwischen Prod und lokalem Build um.","mx.l6.t":"Jeder Lauf hinterlässt Beweise","mx.l6.d":"Nach jedem Lauf veröffentlicht die CI status.json und einen Report. Die Zahlen auf dieser Seite sind genau das, was die CI gemeldet hat — auch wenn der Lauf rot ist.","show.m1.title":"Page Object Model",
     "show.m1.desc":"Jede Seite der Anwendung ist eine eigene Klasse. Tests suchen nie direkt nach Elementen — das ist die Aufgabe des Page-Objekts.",
     "show.m2.title":"Nur Explicit Waits",
     "show.m2.desc":"Kein Thread.sleep(). Jede Aktion wartet genau auf das, was sie braucht. Ergebnis: Tests laufen schneller und schlagen nicht zufällig fehl.",
@@ -4450,6 +4474,7 @@ window.addEventListener('scroll', ()=>{
 const frameworks = {
   selenium: {
     project: 'qavant-selenium',
+    editor: 'IntelliJ IDEA', editorKey: 'idea',
     repo: 'https://github.com/peterolah-qa/qavant-selenium',
     stack: 'Java 17 · Selenium 4 · TestNG · Maven',
     tree: [
@@ -4625,10 +4650,14 @@ const frameworks = {
 
   api: {
     project: 'qavant-api-tests',
+    editor: 'Newman CLI', editorKey: 'cli',
     repo: 'https://github.com/peterolah-qa/qavant-api-tests',
     stack: 'Postman · Newman · GitHub Actions',
     tree: [
-      {label:'qavant-api-tests', folder:'collection', files:[
+      {label:'qavant-api-tests', folder:'terminal', files:[
+        {key:'api-run', name:'newman run'},
+      ]},
+      {label:null, folder:'collection', files:[
         {key:'api-auth', name:'POST /auth — tests.js'},
         {key:'api-schema', name:'GET /booking — tests.js'},
       ]},
@@ -4639,8 +4668,12 @@ const frameworks = {
         {key:'api-ci', name:'api-tests.yml'},
       ]},
     ],
-    defaultFile: 'api-auth',
+    defaultFile: 'api-run',
     files: {
+      'api-run': {
+        name:"newman run", locked:false,
+        code:[["kw", "$", " newman run ", "str", "qavant-api-tests.postman_collection.json"], ["    -e ", "str", "restful-booker.postman_environment.json", " -r cli,htmlextra"], [], ["typ", "❏ 1 · Health check"], ["  ", "fn", "↳ ", "ann", "GET", " /ping (API up?)"], ["    ", "num", "✓", " API is reachable (201)"], ["    ", "num", "✓", " responds under 2s"], ["typ", "❏ 2 · Authentication"], ["  ", "fn", "↳ ", "ann", "POST", " /auth (get token)"], ["    ", "num", "✓", " status 200"], ["    ", "num", "✓", " token returned"], ["typ", "❏ 3 · Booking CRUD (chained)"], ["  ", "fn", "↳ ", "ann", "POST", " CREATE · POST /booking"], ["    ", "num", "✓", " create returns 200"], ["    ", "num", "✓", " response matches booking schema"], ["    ", "num", "✓", " echoes the price we sent"], ["  ", "fn", "↳ ", "ann", "GET", " READ · GET /booking/{id}"], ["    ", "num", "✓", " status 200"], ["    ", "num", "✓", " returns the record we created"], ["    ", "num", "✓", " responds under 2s"], ["  ", "fn", "↳ ", "ann", "PUT", " UPDATE · PUT /booking/{id}"], ["    ", "num", "✓", " status 200"], ["    ", "num", "✓", " firstname was updated"], ["    ", "num", "✓", " price was updated"], ["  ", "fn", "↳ ", "ann", "PATCH", " · partial update"], ["    ", "num", "✓", " status 200"], ["    ", "num", "✓", " only firstname changed"], ["  ", "fn", "↳ ", "ann", "DELETE", " · /booking/{id}"], ["    ", "num", "✓", " delete acknowledged (201)"], ["  ", "fn", "↳ ", "ann", "GET", " VERIFY · GET deleted returns 404"], ["    ", "num", "✓", " record is gone (404)"], ["typ", "❏ 4 · Negative & known issues"], ["  ", "fn", "↳ ", "ann", "DELETE", " without auth → 403"], ["    ", "num", "✓", " rejects unauthenticated delete"], ["  ", "fn", "↳ ", "ann", "GET", " non-existent id → 404"], ["    ", "num", "✓", " missing record returns 404"], ["typ", "❏ 5 · Production contract · qavant.dev"], ["  ", "fn", "↳ ", "ann", "GET", " Homepage 200 + security headers"], ["    ", "num", "✓", " homepage is 200"], ["    ", "num", "✓", " served as HTML"], ["    ", "num", "✓", " HSTS enabled"], ["    ", "num", "✓", " X-Frame-Options set"], ["    ", "num", "✓", " nosniff set"], ["  ", "fn", "↳ ", "ann", "GET", " Unknown path returns 404"], ["    ", "num", "✓", " missing page is 404"], ["  ", "fn", "↳ ", "ann", "GET", " Fonts are immutably cached"], ["    ", "num", "✓", " font is 200"], ["    ", "num", "✓", " long-lived cache header"], [], ["com", "// 27 assertions · timings & per-run results → GitHub Actions run (HUD above)"]]
+      },
       'api-auth': {
         name:"POST /auth \u2014 tests.js", locked:false,
         code:[
@@ -4726,6 +4759,7 @@ const frameworks = {
 
   playwright: {
     project: 'qavant-tests',
+    editor: 'VS Code', editorKey: 'vscode',
     repo: 'https://github.com/peterolah-qa/qavant-tests',
     stack: 'TypeScript · Playwright · 5 browsers',
     tree: [
@@ -4931,6 +4965,8 @@ function renderCode(fwKey, fileKey){
   const repoEl = document.getElementById('ideRepoLink');
   if(repoEl && fw.repo) repoEl.href = fw.repo;
   document.getElementById('ideProjectName').textContent = fw.project;
+  document.getElementById('ideEditorName').textContent = fw.editor;
+  document.getElementById('ide').dataset.editor = fw.editorKey;
 
   let html = '<pre>';
   // Known syntax classes — anything else is treated as plain text
@@ -4991,20 +5027,16 @@ function renderCode(fwKey, fileKey){
       dot.classList.remove('is-hover');
     });
     reqBtn.addEventListener('click', e=>{
-      // Pre-fill topic dropdown when user clicks request access
+      // Pre-select the "framework access" chip when user clicks request access
       const topicEl = document.getElementById('topic');
       if(topicEl){
-        for(let i = 0; i < topicEl.options.length; i++){
-          if(topicEl.options[i].value === 'framework-access'){
-            topicEl.selectedIndex = i;
-            break;
-          }
-        }
+        const access = topicEl.querySelector('input[value="framework-access"]');
+        if(access) access.checked = true;
         // Pre-fill message with framework hint
         const msgEl = document.getElementById('message');
         if(msgEl && !msgEl.value){
           const fwName = activeFramework === 'selenium' ? 'Selenium Java'
-                       : activeFramework === 'api' ? 'REST API (REST Assured)'
+                       : activeFramework === 'api' ? 'REST API (Newman)'
                        : 'Playwright TS';
           const msgPrefix = {
             sk: `Ahoj Peter, zaujal ma tvoj ${fwName} framework. Mohol by si mi poslať prístup ku GitHub repu? Krátko o nás: `,
@@ -5039,6 +5071,7 @@ function switchFramework(fwKey){
 
   document.querySelectorAll('.fw-tab').forEach(t=>{
     t.classList.toggle('active', t.dataset.fw === fwKey);
+    t.setAttribute('aria-pressed', String(t.dataset.fw === fwKey));
   });
 }
 

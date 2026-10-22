@@ -36,6 +36,8 @@ Newest entries at the bottom. Each entry: **what**, **why**, **how verified**.
 | D15 | GitHub access request drawer → separate roadmap item after redesign. | New feature, not redesign; keeps scope tight. |
 | D17 | Hero pipeline built as HTML nodes + SVG links/particles in CSS perspective, **no Three.js**. | Same depth/parallax effect at 0 kB of dependencies; text stays crisp DOM text (axe-readable, i18n-safe). Revisit only if a real 3D need appears. |
 | D18 | Hero HUD lists all 4 suites incl. stale/fail states; release gate = PASS / PASS·stale / BLOCKED derived from them. | Honest state beats a green-only demo. |
+| D19 | Manifesto statement + signature dropped; the 4 principles move into Background as cards, `id="mission"` kept on that block. | Background already carries the same message in its pull-quote; two manifestos = talk between proofs (D7). Easy to restore — texts kept in i18n. |
+| D20 | 6-layer matrix replaces the 3 showcase meta cards; their texts reused for L2/L4/L5. | No copy lost, one less block. |
 | D16 | Rejected from second spec: cyan `#00F0FF` + glow, hardcoded `126 passed in 1.8s`, Geist font. | Conflict with D1–D4; Inter + JetBrains Mono already self-hosted. |
 
 ### Constraints noted
@@ -86,3 +88,27 @@ Newest entries at the bottom. Each entry: **what**, **why**, **how verified**.
 **Verified**
 - Screenshots 1440 px + 390 px with mocked real status.json: no console errors.
 - Forced failure (newman 127/27): node/link red, flow stops, gate `BLOCKED`.
+
+---
+
+## 2026-10-22 — Step 3/5: Sections 01–05
+
+**What**
+- **01 Services:** unchanged structure (already matched spec), new palette only.
+- **02 Framework:**
+  - Per-suite editor chrome: `#ide[data-editor=idea|cli|vscode]`, window title `qavant-… — IntelliJ IDEA / Newman CLI / VS Code` synced with tabs, code and status bar.
+  - New default API file `newman run`: generated from the **real** `qavant-api-tests.postman_collection.json` — 5 folders, 13 requests, 27 `pm.test` names (= status.json total). Command matches `npm run test:report`. No timings shown (not published per assertion).
+  - Framework tabs: mint underline indicator, `aria-pressed`.
+  - 6-layer matrix `#archMatrix`: Tests → Page Objects → Test Data → Core Engine → CI/CD Runner → Telemetry.
+  - Fixed request-access prefill text: "REST API (REST Assured)" → "REST API (Newman)" (the suite is Newman).
+- **03 Background:** interlude section removed; manifesto principles merged as 4 cards (`#mission`).
+- **04 Process:** second mid-CTA removed.
+- **05 Contact:** `select#topic` → `fieldset#topic` with checkbox chips `name="topic"` (stable values `framework|api|audit|framework-access|other`); request-access button ticks the `framework-access` chip. Added GitHub + LinkedIn rows, email is `mailto:`.
+- New i18n keys `mx.l1/l3/l6.{t,d}` (SK/EN/DE). Script check: 0 missing keys across languages.
+
+**Tests impact**
+- `qavant-tests`: `SECTIONS` no longer contains `interlude` → commit on branch `redesign/phosphor-mint` in qavant-tests (bundle `qavant-tests-redesign.bundle`). Merge together with this PR.
+- `#topic` still resolves (now the fieldset); form `checkValidity()` true with name+email+message; FormData carries multiple `topic` values.
+
+**Verified**
+- Screenshots: all 3 IDE editors, matrix, merged Background, contact. No console errors.
