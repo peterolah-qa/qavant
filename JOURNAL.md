@@ -39,3 +39,24 @@ Newest entries at the bottom. Each entry: **what**, **why**, **how verified**.
 ### Constraints noted
 - `qavant-tests/tests/visual.spec.ts` = screenshot baselines → will fail by design after redesign; baselines must be regenerated in the same PR.
 - No push access from the Claude session → work delivered as a patch, pushed by Peter.
+
+---
+
+## 2026-10-22 — Step 1/5: Design tokens + favicon
+
+**What**
+- New `:root` token block (Phosphor Mint): `--bg #090D12`, `--bg-2/--surface #0E131A/#131922`, `--ink #F8FAFC`, `--ink-dim #94A3B8`, `--mint #22E58B`, `--data #38BDF8`, `--fail #F87171`, `--syn-*` for IDE syntax.
+- Legacy names (`--accent*`, `--hot`, `--green`) kept as aliases → no rule rewrites needed.
+- ~200 hardcoded colors mapped to tokens: hex in CSS / inline `style`, blue + navy `rgba()` → `rgb(var(--data-rgb) / a)` / `rgb(var(--bg-rgb) / a)`. SVG presentation attributes (no `var()` support) mapped to new literals; architecture SVG gets reworked in step 3.
+- `.zone-light` light theme removed (~180 lines of overrides); class kept as a hook, now a raised slate band.
+- Primary button = mint fill, dark ink; hover slides to ink.
+- IDE syntax theme: cool base, warm literals, no mint (mint stays reserved for pass).
+- Favicon: `favicon.svg` (16/32), `favicon-large.svg` (≥48, with centre dot), `favicon-32.png`, `apple-touch-icon.png` (180). `theme-color` → `#090D12`.
+
+**Found in test suites (to handle in step 4)**
+- `qavant-tests/tests/fixtures/constants.ts` lists section `interlude` → update when interlude is removed (D7).
+- `accessibility.spec.ts` waits for `#boot` hidden → still passes after loader removal (absent = hidden), but the comment + wait become dead code.
+
+**Verified**
+- Full-page screenshot at 1440 px reviewed: no leftover blue/navy, text contrast OK on all bands.
+- Remaining raw hex outside `:root`: LinkedIn brand `#0A66C2`, SVG literals (architecture diagram, step 3).
