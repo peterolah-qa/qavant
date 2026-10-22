@@ -214,29 +214,6 @@
   .container{max-width:var(--maxw);margin:0 auto;padding:0 32px;position:relative;z-index:2}
   @media (max-width:720px){.container{padding:0 22px}}
 
-  .boot{
-    position:fixed;inset:0;background:var(--bg);z-index:9000;
-    display:flex;align-items:center;justify-content:center;
-    font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--ink-2);
-    transition:opacity .6s var(--ease),visibility .6s;
-  }
-  .boot.gone{opacity:0;visibility:hidden;pointer-events:none}
-  .boot-inner{width:min(440px,80%)}
-  .boot-line{
-    display:flex;gap:10px;padding:4px 0;
-    opacity:0;transform:translateY(4px);
-    animation:bootIn .3s var(--ease-out) forwards;
-  }
-  .boot-line .ok{color:var(--green)}
-  .boot-line .arrow{color:var(--accent-2)}
-  .boot-bar{margin-top:16px;height:2px;background:var(--line);overflow:hidden;border-radius:2px}
-  .boot-bar::after{
-    content:"";display:block;height:100%;width:0%;
-    background:linear-gradient(90deg,var(--accent),var(--accent-2));
-    animation:bootFill 1.6s var(--ease-out) forwards;
-  }
-  @keyframes bootIn{to{opacity:1;transform:translateY(0)}}
-  @keyframes bootFill{to{width:100%}}
 
   .nav{position:fixed;top:16px;left:0;right:0;z-index:100;pointer-events:none}
   .nav-inner{
@@ -701,25 +678,47 @@
     text-transform:uppercase;letter-spacing:0.16em;margin-top:14px;line-height:1.5;
   }
 
-  /* ============== WEBGL HERO ELEMENT ============== */
-  .hero-3d{
-    position:absolute;
-    top:0;
-    right:0;
-    width:50vw;
-    max-width:680px;
-    height:100%;
-    pointer-events:none;
-    z-index:1;
-    opacity:0;
-    transition:opacity 1.2s ease 1s;
+  /* ============== HERO PIPELINE (JOURNAL D5, D17) ============== */
+  .pipeline-card{display:flex;flex-direction:column;gap:16px;perspective:1200px}
+  .pipeline{
+    position:relative;display:flex;flex-direction:column;gap:38px;
+    padding:26px 22px;border:1px solid var(--line-2);border-radius:var(--radius);
+    background:rgb(var(--bg-rgb) / 0.55);
+    transform-style:preserve-3d;transition:transform .5s var(--ease-out);
+    will-change:transform;
   }
-  .hero-3d.ready{opacity:0.85}
-
-  /* hide on small screens — terminal takes priority on mobile */
-  @media (max-width:1100px){
-    .hero-3d{display:none}
+  .pipe-links{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+  .pipe-links path{fill:none;stroke:var(--line-2);stroke-width:1.2}
+  .pipe-links path.ok{stroke:rgb(var(--mint-rgb) / 0.35)}
+  .pipe-links path.bad{stroke:rgb(248 113 113 / 0.5)}
+  .pipe-links circle.p-pass{fill:var(--mint)}
+  .pipe-links circle.p-tele{fill:var(--data)}
+  .pipe-row{position:relative;display:flex;justify-content:space-between;gap:14px}
+  .pnode{
+    flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;
+    padding:10px 12px;border:1px solid var(--line-2);border-radius:10px;
+    background:var(--surface);font-family:'JetBrains Mono',monospace;
   }
+  .pn-k{font-size:11px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pn-v{font-size:11px;color:var(--ink-dim);white-space:nowrap}
+  .pnode.ok{border-color:rgb(var(--mint-rgb) / 0.45)}
+  .pnode.ok .pn-v{color:var(--mint)}
+  .pnode.stale .pn-v{color:var(--ink-dim)}
+  .pnode.bad{border-color:rgb(248 113 113 / 0.6)}
+  .pnode.bad .pn-v{color:var(--fail)}
+  .hud .term-body{min-height:0;padding:14px 18px}
+  .hud-line{display:grid;grid-template-columns:14px 1fr auto;gap:8px;align-items:baseline;
+    font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.9;color:var(--ink)}
+  .hud-line a{color:inherit;text-decoration:none;border-bottom:1px dashed var(--line-2)}
+  .hud-line a:hover,.hud-line a:focus-visible{color:var(--data);border-color:var(--data)}
+  .hud-line .n{color:var(--data)}
+  .hud-line .meta{color:var(--ink-dim);font-size:11px}
+  .hud-line .dot.ok{color:var(--mint)} .hud-line .dot.stale{color:var(--ink-dim)} .hud-line .dot.bad{color:var(--fail)}
+  .hud-line.cmd{grid-template-columns:auto;color:var(--ink-dim)}
+  .hud-line.gate{margin-top:6px;padding-top:6px;border-top:1px solid var(--line)}
+  .hud-note{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.06em;color:var(--ink-dim);padding:0 18px 14px}
+  @media (max-width:520px){.pipeline{gap:30px;padding:18px 12px}.pipe-row{gap:8px}.pnode{padding:8px}.pn-k,.pn-v{font-size:10px}}
+  @media (prefers-reduced-motion:reduce){.pipeline{transform:none !important;transition:none}}
 
   /* ============== MAGNETIC TYPOGRAPHY (hero) ============== */
   h1 .word{
@@ -2818,9 +2817,6 @@
       height:400px;
     }
 
-    /* Boot */
-    .boot-inner{width:88%}
-    .boot-line{font-size:11px}
 
     /* Scroll progress thicker for visibility */
     .scroll-progress{height:3px}
@@ -2998,42 +2994,7 @@
 </head>
 <body>
 
-<div class="curtain" id="curtain">
-  <div class="curtain-half top"></div>
-  <div class="curtain-half bottom"></div>
-  <div class="curtain-line"></div>
-  <div class="curtain-mark" aria-hidden="true">
-    <span class="cm-letter cm-q">Q</span>
-    <span class="cm-letter cm-a1">A</span>
-    <span class="cm-letter cm-v">V</span>
-    <span class="cm-letter cm-a2">A</span>
-    <span class="cm-letter cm-n">N</span>
-    <span class="cm-letter cm-t">T</span>
-  </div>
-  <div class="curtain-bar" aria-hidden="true"></div>
-  <div class="curtain-status">qavant.dev · loading</div>
-</div>
-
 <div class="scroll-progress" id="scrollProgress"></div>
-
-<div class="boot" id="boot">
-  <div class="boot-inner">
-    <div class="boot-line" style="animation-delay:0s">
-      <span class="arrow">$</span>
-      <span>initializing qavant.dev<span class="cursor-blink"></span></span>
-    </div>
-    <div class="boot-line" style="animation-delay:.25s">
-      <span class="ok">✓</span><span>loading test framework</span>
-    </div>
-    <div class="boot-line" style="animation-delay:.55s">
-      <span class="ok">✓</span><span>connecting to fintech mainframe</span>
-    </div>
-    <div class="boot-line" style="animation-delay:.9s">
-      <span class="ok">✓</span><span>spinning up quality assurance</span>
-    </div>
-    <div class="boot-bar"></div>
-  </div>
-</div>
 
 <div class="bg-grid"></div>
 <div class="bg-glow"></div>
@@ -3074,7 +3035,6 @@
 
 <section class="hero">
   <div class="hero-aura" id="heroAura"></div>
-  <canvas class="hero-3d" id="hero3d" aria-hidden="true"></canvas>
   <div class="container">
     <div class="hero-grid">
       <div>
@@ -3161,12 +3121,31 @@
         </div>
       </div>
 
-      <div class="terminal reveal" id="terminal" aria-hidden="true">
-        <div class="term-bar">
-          <span class="d r"></span><span class="d y"></span><span class="d g"></span>
-          <span class="term-title">qavant — playwright-runner — 80×24</span>
+      <div class="pipeline-card reveal" id="pipelineCard">
+        <div class="pipeline" id="hero3d" aria-hidden="true">
+          <svg class="pipe-links" id="pipeLinks"></svg>
+          <div class="pipe-row">
+            <div class="pnode" data-node="push"><span class="pn-k">git push</span><span class="pn-v">main</span></div>
+            <div class="pnode" data-node="build"><span class="pn-k">CI build</span><span class="pn-v">GitHub Actions</span></div>
+          </div>
+          <div class="pipe-row pipe-matrix">
+            <div class="pnode" data-node="ui" data-suite="ui"><span class="pn-k">Playwright E2E</span><span class="pn-v" data-out>—</span></div>
+            <div class="pnode" data-node="sel" data-suite="sel"><span class="pn-k">Selenium 4 POM</span><span class="pn-v" data-out>—</span></div>
+            <div class="pnode" data-node="api" data-suite="api"><span class="pn-k">REST Newman</span><span class="pn-v" data-out>—</span></div>
+          </div>
+          <div class="pipe-row">
+            <div class="pnode" data-node="gate" data-suite="perf"><span class="pn-k">k6 quality gate</span><span class="pn-v" data-out>—</span></div>
+            <div class="pnode pnode-release" data-node="release"><span class="pn-k">release</span><span class="pn-v" data-out>—</span></div>
+          </div>
         </div>
-        <div class="term-body" id="termBody"></div>
+        <div class="terminal hud" id="terminal">
+          <div class="term-bar">
+            <span class="d r"></span><span class="d y"></span><span class="d g"></span>
+            <span class="term-title">qavant — ci telemetry</span>
+          </div>
+          <div class="term-body" id="termBody"></div>
+          <p class="hud-note" data-i18n="hud.note">Živé dáta z CI. Každý riadok vedie na skutočný beh.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -3785,7 +3764,7 @@ const dict = {
     "mission.p4.t":"Honest work, honest pricing",
     "mission.p4.d":"Fixné ceny, jasný rozsah, žiadne hodinové faktúry s prekvapeniami na konci mesiaca.",
     "m.tests":"Testy","m.uitests":"UI testy · Playwright","m.apitests":"API testy · Newman","m.passrate":"Pass rate","m.status":"Stav","m.demo":"DEMO",
-    "m.weekly":"posledných 7 dní","m.runs":"behov","m.available":"Voľný","m.from":"ihneď k dispozícii",
+    "m.weekly":"posledných 7 dní","m.runs":"behov","m.available":"Voľný","hud.note":"Živé dáta z CI. Každý riadok vedie na skutočný beh.","m.from":"ihneď k dispozícii",
     "proc.kicker":"Spolupráca",
     "proc.t1":"Bez prekvapení.","proc.t2":"Predvídateľný proces.",
     "proc.intro":"Štyri jasné kroky od prvého emailu po odovzdanie. Vieš čo sa kedy deje, ja viem čo sa odo mňa očakáva. Žiadny black-box freelancer.",
@@ -3859,7 +3838,7 @@ const dict = {
     "mission.p4.t":"Honest work, honest pricing",
     "mission.p4.d":"Fixed prices, clear scope, no hourly invoices with end-of-month surprises.",
     "m.tests":"Tests","m.uitests":"UI tests · Playwright","m.apitests":"API tests · Newman","m.passrate":"Pass rate","m.status":"Status","m.demo":"DEMO",
-    "m.weekly":"last 7 days","m.runs":"runs","m.available":"Available","m.from":"available immediately",
+    "m.weekly":"last 7 days","m.runs":"runs","m.available":"Available","hud.note":"Live CI data. Every line links to the real run.","m.from":"available immediately",
     "proc.kicker":"How we work",
     "proc.t1":"No surprises.","proc.t2":"Predictable process.",
     "proc.intro":"Four clear steps from first email to handover. You know what happens when, I know what's expected of me. No black-box freelancer.",
@@ -3933,7 +3912,7 @@ const dict = {
     "mission.p4.t":"Ehrliche Arbeit, ehrliche Preise",
     "mission.p4.d":"Festpreise, klarer Umfang, keine Stundenrechnungen mit Überraschungen am Monatsende.",
     "m.tests":"Tests","m.uitests":"UI-Tests · Playwright","m.apitests":"API-Tests · Newman","m.passrate":"Pass Rate","m.status":"Status","m.demo":"DEMO",
-    "m.weekly":"letzte 7 Tage","m.runs":"Durchläufe","m.available":"Verfügbar","m.from":"ab sofort",
+    "m.weekly":"letzte 7 Tage","m.runs":"Durchläufe","m.available":"Verfügbar","hud.note":"Live-Daten aus der CI. Jede Zeile führt zum echten Lauf.","m.from":"ab sofort",
     "proc.kicker":"Zusammenarbeit",
     "proc.t1":"Keine Überraschungen.","proc.t2":"Vorhersehbarer Prozess.",
     "proc.intro":"Vier klare Schritte von der ersten E-Mail bis zur Übergabe. Sie wissen, was wann passiert — ich weiß, was von mir erwartet wird. Kein Black-Box-Freelancer.",
@@ -4027,23 +4006,12 @@ window.addEventListener('load', ()=>{
   // Shortened from 2.6s → 1.4s for faster First Contentful Paint
   // Letter assembly still completes but with tighter pacing
 
-  // Stage 1: Curtain holds for 1.4s — quick reveal
-  setTimeout(()=>{
-    document.getElementById('curtain').classList.add('gone');
-  }, 1400);
-
-  // Stage 1.5: Header logo assembly starts as curtain leaves
-  setTimeout(()=>{
+  // Intro: no loader (JOURNAL D7) — content is visible on first paint
+  requestAnimationFrame(()=>{
     const navLogo = document.getElementById('navLogo');
     if(navLogo) navLogo.classList.add('assembled');
-  }, 1600);
-
-  // Stage 2: Boot sequence + hero title reveal
-  setTimeout(()=>{
-    document.getElementById('boot').classList.add('gone');
     document.getElementById('heroTitle').classList.add('shown');
-    setTimeout(runTerminal, 400);
-  }, 2400);
+  });
 });
 
 // Safety net: if anything fails, ensure curtain is removed by 4s
@@ -4066,8 +4034,6 @@ setTimeout(()=>{
   setTimeout(()=>{
     const c = document.getElementById('curtain');
     if(c) c.remove();
-    const b = document.getElementById('boot');
-    if(b && b.classList.contains('gone')) b.remove();
   }, 6000);
 }, 4000);
 
@@ -4081,46 +4047,6 @@ const SUITE = {
 };
 // A published status.json older than this is shown as stale, not as fresh CI data.
 const STALE_AFTER_DAYS = 14;
-
-const termLines = [
-  // mirrors the real qavant-tests suite that feeds the live metrics above
-  {t:'<span class="prompt">$</span> <span class="cmd">npx playwright test</span>',d:0},
-  {t:`<span class="dim">Running ${SUITE.ui.total} tests using ${SUITE.ui.workers} workers · ${SUITE.ui.browsers} browsers</span>`,d:420},
-  {t:'› smoke › skeleton is intact............<span class="ok">PASS</span> <span class="dim">3.1s</span>',d:340},
-  {t:'› i18n › SK/EN/DE completeness..........<span class="ok">PASS</span> <span class="dim">11.4s</span>',d:280},
-  {t:'› a11y › axe-core WCAG 2 AA.............<span class="fail">FAIL</span> <span class="dim">contrast 3.43</span>',d:340},
-  {t:'<span class="dim">  → cause: axe sampled mid-animation · disabling transitions</span>',d:300},
-  {t:'› a11y › axe-core WCAG 2 AA.............<span class="ok">PASS</span> <span class="dim">9.8s</span>',d:380},
-  {t:'› contact-form › Netlify POST...........<span class="ok">PASS</span> <span class="dim">6.9s</span>',d:280},
-  {t:'› responsive › no overflow @360px.......<span class="ok">PASS</span> <span class="dim">5.3s</span>',d:280},
-  {t:`<span class="dim">${SUITE.ui.total} passed (${SUITE.ui.duration})</span>`,d:400},
-  {t:'<span class="ok">✓ status.json published → live metrics updated</span>',d:220},
-  {t:'<span class="prompt">$</span> <span class="cursor-blink"></span>',d:250},
-];
-function runTerminal(){
-  const body = document.getElementById('termBody');
-  body.innerHTML = '';
-  let delay = 0;
-  termLines.forEach(line=>{
-    delay += line.d;
-    setTimeout(()=>{
-      const el = document.createElement('span');
-      el.className = 'term-line';
-      el.innerHTML = line.t;
-      body.appendChild(el);
-    }, delay);
-  });
-  const term = document.getElementById('terminal');
-  if(!term._bound){
-    term._bound = true;
-    term.addEventListener('mouseenter', ()=>{
-      if(term._busy) return;
-      term._busy = true;
-      runTerminal();
-      setTimeout(()=> term._busy = false, 4500);
-    });
-  }
-}
 
 const io = new IntersectionObserver(entries=>{
   entries.forEach(e=>{
@@ -4243,21 +4169,33 @@ if(!calm) document.querySelectorAll('.process-step').forEach(step=>{
   });
 });
 
-// ============== LIVE METRICS WIDGET ==============
-// To use REAL data later, set USE_LIVE_METRICS = true and configure the source.
-// Both suites publish status.json from their own CI runs (see fetchStatus below).
-const USE_LIVE_METRICS = true;
-// Published by the qavant-tests GitHub Actions run after each test run.
-const METRICS_URL = 'https://raw.githubusercontent.com/peterolah-qa/qavant-tests/main/status.json';
-const API_METRICS_URL = 'https://raw.githubusercontent.com/peterolah-qa/qavant-api-tests/main/status.json';
+const isTouchDevice = matchMedia('(pointer:coarse)').matches || 'ontouchstart' in window;
 
-// Fallbacks are derived from SUITE — no separate numbers to drift out of sync.
+// ============== LIVE CI DATA — one fetch, many consumers ==============
+// Every suite publishes the same status.json contract from its own CI run.
+// The hero HUD, the pipeline DAG and the metric cards all read from here;
+// nothing on the page states a test number that CI did not report (JOURNAL D4).
+const USE_LIVE_METRICS = true;
+const GH = 'https://github.com/peterolah-qa/';
+const SUITES = {
+  ui:   { name:'playwright', repo:'qavant-tests',     run: GH+'qavant-tests/actions/workflows/playwright.yml' },
+  sel:  { name:'selenium',   repo:'qavant-selenium',  run: GH+'qavant-selenium/actions/workflows/selenium.yml' },
+  api:  { name:'newman',     repo:'qavant-api-tests', run: GH+'qavant-api-tests/actions/workflows/api-tests.yml' },
+  perf: { name:'k6 smoke',   repo:'qavant-perf',      run: GH+'qavant-perf/actions/workflows/k6.yml' },
+};
+const statusUrl = repo => `https://raw.githubusercontent.com/peterolah-qa/${repo}/main/status.json`;
+// kept for the metric cards' offline fallback (SUITE block above)
+const METRICS_URL = statusUrl(SUITES.ui.repo);
+const API_METRICS_URL = statusUrl(SUITES.api.repo);
+
 const uiFallback  = { testsRun: SUITE.ui.total,  testsTotal: SUITE.ui.total,
                       passRate: SUITE.ui.passRate,  totalRuns: SUITE.ui.runs,
                       live: false, stale: false, lastRun: null };
 const apiFallback = { testsRun: SUITE.api.total, testsTotal: SUITE.api.total,
                       passRate: SUITE.api.passRate, totalRuns: SUITE.api.runs,
                       live: false, stale: false, lastRun: null };
+const noData = { testsRun: null, testsTotal: null, passRate: null, totalRuns: null,
+                 live: false, stale: false, lastRun: null };
 
 async function fetchStatus(url, fallback){
   if(!USE_LIVE_METRICS) return { ...fallback };
@@ -4285,6 +4223,25 @@ async function fetchStatus(url, fallback){
   }
 }
 
+// single shared request per suite, started immediately (hero is above the fold)
+const suitesReady = Promise.all(
+  Object.entries(SUITES).map(async ([k, cfg]) => {
+    const fb = k === 'ui' ? uiFallback : k === 'api' ? apiFallback : noData;
+    return [k, await fetchStatus(statusUrl(cfg.repo), fb)];
+  })
+).then(Object.fromEntries);
+
+// pass | stale | fail | none — the only states the UI is allowed to show
+function suiteState(d){
+  if(!d || !d.live) return 'none';
+  if(d.testsRun !== d.testsTotal || d.passRate < 100) return 'bad';
+  return d.stale ? 'stale' : 'ok';
+}
+
+function fmtDate(d){
+  return d ? d.toLocaleDateString(document.documentElement.lang || 'sk', { day:'numeric', month:'short' }) : '';
+}
+
 // Render the /total denominators before any fetch, so the number never
 // jumps from a placeholder to the real value mid-animation.
 function paintTotals(){
@@ -4298,19 +4255,17 @@ paintTotals();
 function paintAge(el, src){
   if(!el) return;
   if(!src.live || !src.lastRun){ el.textContent = ''; return; }
-  const d = src.lastRun;
-  const label = d.toLocaleDateString(document.documentElement.lang || 'sk', { day:'numeric', month:'short' });
-  el.textContent = ' · ' + label;
+  el.textContent = ' · ' + fmtDate(src.lastRun);
   el.classList.toggle('stale', !!src.stale);
-  el.title = d.toLocaleString();
+  el.title = src.lastRun.toLocaleString();
 }
 
 function animateMetric(el, target, opts={}){
-  const dur = opts.duration || 1400;
+  const dur = calm ? 0 : (opts.duration || 1400);
   const decimals = opts.decimals || 0;
   const start = performance.now();
   const animate = (t)=>{
-    const p = Math.min(1, (t-start)/dur);
+    const p = dur ? Math.min(1, (t-start)/dur) : 1;
     const eased = 1 - Math.pow(1-p, 3);
     const val = (target * eased).toFixed(decimals);
     el(val);
@@ -4323,11 +4278,7 @@ const metricsIO = new IntersectionObserver(async entries=>{
   for(const e of entries){
     if(e.isIntersecting){
       metricsIO.unobserve(e.target);
-      // both suites publish the same status.json contract from their own CI
-      const [ui, api] = await Promise.all([
-        fetchStatus(METRICS_URL, uiFallback),
-        fetchStatus(API_METRICS_URL, apiFallback),
-      ]);
+      const { ui, api } = await suitesReady;
 
       animateMetric(v=>{
         document.getElementById('metricTests').innerHTML =
@@ -4352,6 +4303,140 @@ const metricsIO = new IntersectionObserver(async entries=>{
 const metricsEl = document.getElementById('liveMetrics');
 if(metricsEl) metricsIO.observe(metricsEl);
 
+// ============== HERO HUD — `qavant status --live` ==============
+const escapeHtml = t => String(t).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+async function renderHud(){
+  const body = document.getElementById('termBody');
+  if(!body) return;
+  const data = await suitesReady;
+  const glyph = { ok:'●', stale:'○', bad:'✕', none:'·' };
+  const rows = Object.entries(SUITES).map(([k, cfg])=>{
+    const d = data[k], st = suiteState(d);
+    const count = d.live ? `<span class="n">${d.testsRun}/${d.testsTotal}</span>` : '<span class="meta">no data</span>';
+    const meta = d.live ? `${fmtDate(d.lastRun)}${st === 'stale' ? ' · stale' : ''}` : '';
+    return `<div class="hud-line"><span class="dot ${st}" aria-label="${st}">${glyph[st]}</span>`+
+      `<a href="${cfg.run}" target="_blank" rel="noopener">${escapeHtml(cfg.name)} ${count}</a>`+
+      `<span class="meta">${escapeHtml(meta)}</span></div>`;
+  }).join('');
+  const states = Object.keys(SUITES).map(k => suiteState(data[k]));
+  const gate = states.includes('bad') ? 'bad' : states.every(x => x === 'ok') ? 'ok' : 'stale';
+  const gateTxt = { ok:'release gate: PASS', stale:'release gate: PASS · some runs stale', bad:'release gate: BLOCKED' }[gate];
+  body.innerHTML = `<div class="hud-line cmd">$ qavant status --live</div>${rows}`+
+    `<div class="hud-line gate"><span class="dot ${gate}">${glyph[gate]}</span><span>${gateTxt}</span><span></span></div>`;
+  return { data, gate };
+}
+
+// ============== HERO PIPELINE — CI/CD DAG with live state ==============
+// Nodes are HTML (crisp text, translateZ depth); links + particles are SVG
+// computed from node boxes, so the same code serves desktop and mobile layouts.
+(function pipeline(){
+  const root = document.getElementById('hero3d');
+  const svg = document.getElementById('pipeLinks');
+  if(!root || !svg) return;
+  const NS = 'http://www.w3.org/2000/svg';
+  const edges = [
+    ['push','build','tele'], ['build','ui','tele'], ['build','sel','tele'], ['build','api','tele'],
+    ['ui','gate','pass'], ['sel','gate','pass'], ['api','gate','pass'], ['gate','release','pass'],
+  ];
+  const node = k => root.querySelector(`[data-node="${k}"]`);
+  let paths = [], particles = [], running = false, state = {};
+  const animate = !calm && !matchMedia('(max-width:700px)').matches;
+
+  // layout coordinates (offset*), not getBoundingClientRect — the tilt
+  // transform must not skew the links away from their nodes
+  function anchor(el, side){
+    const row = el.parentElement;
+    const x = row.offsetLeft + el.offsetLeft, y = row.offsetTop + el.offsetTop;
+    const w = el.offsetWidth, h = el.offsetHeight;
+    return side === 'r' ? [x + w, y + h/2]
+         : side === 'l' ? [x, y + h/2]
+         : side === 'b' ? [x + w/2, y + h]
+         :                [x + w/2, y];
+  }
+  function layout(){
+    svg.innerHTML = ''; paths = [];
+    for(const [a, b, kind] of edges){
+      const ea = node(a), eb = node(b);
+      const sameRow = ea.parentElement === eb.parentElement;
+      const [x1, y1] = anchor(ea, sameRow ? 'r' : 'b');
+      const [x2, y2] = anchor(eb, sameRow ? 'l' : 't');
+      const d = sameRow ? `M${x1},${y1} L${x2},${y2}`
+                        : `M${x1},${y1} C${x1},${(y1+y2)/2} ${x2},${(y1+y2)/2} ${x2},${y2}`;
+      const p = document.createElementNS(NS, 'path');
+      p.setAttribute('d', d);
+      const st = state[b] || state[a];
+      if(st === 'bad' || st === 'ok') p.classList.add(st);
+      svg.appendChild(p);
+      paths.push({ el: p, kind, len: p.getTotalLength(), blocked: st === 'bad' });
+    }
+  }
+  function spawn(){
+    particles = [];
+    if(!animate) return;                    // static diagram for reduced motion / mobile
+    paths.forEach((p, i)=>{
+      if(p.blocked) return;                 // a failing suite stops the flow — visibly
+      for(let n = 0; n < 2; n++){
+        const c = document.createElementNS(NS, 'circle');
+        c.setAttribute('r', p.kind === 'pass' ? 2.2 : 1.6);
+        c.setAttribute('class', p.kind === 'pass' ? 'p-pass' : 'p-tele');
+        svg.appendChild(c);
+        const q = { c, p, t: (n / 2) + i * 0.07, v: 0.0035 + Math.random() * 0.002 };
+        const pt = p.el.getPointAtLength(q.t * p.len); c.setAttribute('cx', pt.x); c.setAttribute('cy', pt.y);
+        particles.push(q);
+      }
+    });
+  }
+  function frame(){
+    if(!running) return;
+    for(const q of particles){
+      q.t = (q.t + q.v) % 1;
+      const pt = q.p.el.getPointAtLength(q.t * q.p.len);
+      q.c.setAttribute('cx', pt.x); q.c.setAttribute('cy', pt.y);
+    }
+    requestAnimationFrame(frame);
+  }
+  function start(){ if(animate && !running){ running = true; requestAnimationFrame(frame); } }
+  function stop(){ running = false; }
+
+  function paintNodes(data, gate){
+    const out = (k, txt, st) => {
+      const el = node(k); if(!el) return;
+      el.classList.remove('ok','stale','bad'); if(st !== 'none') el.classList.add(st);
+      const v = el.querySelector('[data-out]'); if(v) v.textContent = txt;
+      state[k] = st;
+    };
+    for(const k of ['ui','sel','api']){
+      const d = data[k], st = suiteState(d);
+      out(k, d.live ? `${d.testsRun}/${d.testsTotal}${st === 'stale' ? ' · stale' : ''}` : 'no data', st);
+    }
+    const perf = data.perf, pst = suiteState(perf);
+    out('gate', perf.live ? `${perf.testsRun}/${perf.testsTotal} checks` : 'no data', pst);
+    out('release', gate === 'bad' ? 'blocked' : gate === 'ok' ? 'ready' : 'ready · stale', gate);
+    state.push = state.build = 'ok';
+  }
+
+  layout();
+  renderHud().then(res=>{
+    if(!res) return;
+    paintNodes(res.data, res.gate);
+    layout(); spawn(); start();
+  });
+  let rT; window.addEventListener('resize', ()=>{ clearTimeout(rT); rT = setTimeout(()=>{ layout(); spawn(); }, 150); });
+  new IntersectionObserver(es => es.forEach(e => e.isIntersecting ? start() : stop())).observe(root);
+  document.addEventListener('visibilitychange', ()=> document.hidden ? stop() : start());
+
+  // gentle parallax tilt — the card moves, text stays upright and readable
+  if(animate && !isTouchDevice){
+    const card = document.getElementById('pipelineCard');
+    card.addEventListener('mousemove', e=>{
+      const r = card.getBoundingClientRect();
+      const nx = (e.clientX - r.left) / r.width - 0.5, ny = (e.clientY - r.top) / r.height - 0.5;
+      root.style.transform = `rotateY(${nx * 6}deg) rotateX(${ny * -5}deg)`;
+    });
+    card.addEventListener('mouseleave', ()=>{ root.style.transform = ''; });
+  }
+})();
+
 let lastY = 0;
 const nav = document.getElementById('nav');
 window.addEventListener('scroll', ()=>{
@@ -4360,17 +4445,6 @@ window.addEventListener('scroll', ()=>{
   else nav.classList.remove('hide');
   lastY = y;
 }, { passive: true });
-
-const term = document.getElementById('terminal');
-const isTouchDevice = matchMedia('(pointer:coarse)').matches || 'ontouchstart' in window;
-if(!isTouchDevice && !calm){
-  window.addEventListener('scroll', ()=>{
-    const y = window.scrollY;
-    if(y < 800 && term){
-      term.style.transform = `translateY(${y * -0.08}px)`;
-    }
-  }, { passive: true });
-}
 
 // ============== SHOWCASE IDE — 3 FRAMEWORKS ==============
 const frameworks = {
@@ -5187,239 +5261,6 @@ if(heroTitle && !matchMedia('(pointer:coarse)').matches && !calm){
   setTimeout(()=>{
     heroTitle.classList.add('magnetic-active');
   }, 4500);
-}
-
-// ============== HERO 3D — wireframe geometric structure ==============
-// 2.5D orthographic projection on canvas — no external libs.
-// Renders an octahedron with pulsing nodes that react to scroll & cursor.
-const hero3d = document.getElementById('hero3d');
-if(hero3d && !matchMedia('(pointer:coarse)').matches && !calm){
-  const ctx = hero3d.getContext('2d');
-  let W = 0, H = 0, DPR = window.devicePixelRatio || 1;
-
-  function resize(){
-    const r = hero3d.getBoundingClientRect();
-    W = r.width; H = r.height;
-    hero3d.width = W * DPR;
-    hero3d.height = H * DPR;
-    ctx.scale(DPR, DPR);
-  }
-  resize();
-  // Cache the canvas rect so the mousemove handler below doesn't call
-  // getBoundingClientRect() on every pointer move across the whole page.
-  let hero3dRect = hero3d.getBoundingClientRect();
-  function refreshHero3dRect(){ hero3dRect = hero3d.getBoundingClientRect(); }
-  window.addEventListener('resize', ()=>{
-    ctx.setTransform(1,0,0,1,0,0);
-    resize();
-    refreshHero3dRect();
-  });
-
-  // ---- Geometry: octahedron with secondary "test pyramid" inside ----
-  // 6 vertices of octahedron (in unit cube)
-  const baseSize = 130;
-  const verts = [
-    [0,  baseSize, 0],     // top
-    [0, -baseSize, 0],     // bottom
-    [ baseSize, 0, 0],     // right
-    [-baseSize, 0, 0],     // left
-    [0, 0,  baseSize],     // front
-    [0, 0, -baseSize],     // back
-  ];
-
-  // Edges: every face of octahedron has 3 edges
-  const edges = [
-    [0,2],[0,3],[0,4],[0,5],  // top to mid ring
-    [1,2],[1,3],[1,4],[1,5],  // bottom to mid ring
-    [2,4],[4,3],[3,5],[5,2],  // mid ring
-  ];
-
-  // Inner test pyramid (3 layers — Unit / Integration / E2E)
-  const innerSize = 60;
-  const innerVerts = [
-    [0,  innerSize*1.5, 0],          // peak
-    [-innerSize, 0, -innerSize],     // base 1
-    [ innerSize, 0, -innerSize],     // base 2
-    [ innerSize, 0,  innerSize],     // base 3
-    [-innerSize, 0,  innerSize],     // base 4
-  ];
-  const innerEdges = [
-    [0,1],[0,2],[0,3],[0,4],     // peak to base
-    [1,2],[2,3],[3,4],[4,1],     // base ring
-    // mid ring at half-height
-  ];
-
-  // ---- State ----
-  let rotX = 0, rotY = 0, rotZ = 0;
-  let targetRotX = 0, targetRotY = 0;
-  let mouseX = 0.5, mouseY = 0.5;  // normalized 0-1
-  let scrollY = 0;
-  let time = 0;
-
-  document.addEventListener('mousemove', e=>{
-    // Skip work entirely once the hero is scrolled out of view.
-    if(scrollY > window.innerHeight) return;
-    mouseX = (e.clientX - hero3dRect.left) / hero3dRect.width;
-    mouseY = (e.clientY - hero3dRect.top) / hero3dRect.height;
-    targetRotY = (mouseX - 0.5) * 0.6;
-    targetRotX = (mouseY - 0.5) * -0.4;
-  });
-
-  window.addEventListener('scroll', ()=>{
-    scrollY = window.scrollY;
-    // Keep the cached rect accurate only while the hero is in/near view.
-    if(scrollY < window.innerHeight) refreshHero3dRect();
-  }, { passive:true });
-
-  // ---- Rotation matrices ----
-  function rotate(p, ax, ay, az){
-    let [x, y, z] = p;
-    // X rotation
-    let cy = Math.cos(ax), sy = Math.sin(ax);
-    let y1 = y * cy - z * sy;
-    let z1 = y * sy + z * cy;
-    y = y1; z = z1;
-    // Y rotation
-    cy = Math.cos(ay); sy = Math.sin(ay);
-    let x1 = x * cy + z * sy;
-    z1 = -x * sy + z * cy;
-    x = x1; z = z1;
-    // Z rotation
-    cy = Math.cos(az); sy = Math.sin(az);
-    x1 = x * cy - y * sy;
-    y1 = x * sy + y * cy;
-    return [x1, y1, z];
-  }
-
-  function project(p){
-    // Simple orthographic projection with mild perspective
-    const distance = 800;
-    const factor = distance / (distance + p[2]);
-    return [
-      W/2 + p[0] * factor,
-      H/2 + p[1] * factor,
-      p[2]  // depth for z-sorting
-    ];
-  }
-
-  // ---- Render loop ----
-  function draw(){
-    // Pause entirely when the page/window is hidden (e.g. you're working on the
-    // other monitor). The visibilitychange handler below restarts the loop.
-    if(document.hidden) return;
-
-    // Scroll-driven fade. Check BEFORE clearing/repainting so that when the hero
-    // is scrolled out of view we don't repaint the canvas at all — important over
-    // DisplayLink, where every repaint is pushed across USB.
-    const scrollFade = Math.max(0, 1 - scrollY / 600);
-    if(scrollFade < 0.05){
-      requestAnimationFrame(draw);
-      return;
-    }
-
-    ctx.clearRect(0, 0, W, H);
-
-    time += 0.005;
-
-    // Smooth follow cursor + autonomous rotation
-    rotX += (targetRotX - rotX) * 0.06;
-    rotY += (targetRotY - rotY) * 0.06;
-    rotZ = time * 0.15;
-    const autoX = Math.sin(time * 0.5) * 0.15;
-    const autoY = time * 0.2;
-
-    // Transform all outer verts
-    const projected = verts.map(v=>{
-      const r = rotate(v, rotX + autoX, rotY + autoY, rotZ);
-      return project(r);
-    });
-
-    // Draw outer octahedron edges (sort by avg depth — back first)
-    const sortedEdges = edges.map(([a,b])=>{
-      const za = projected[a][2], zb = projected[b][2];
-      return { a, b, depth: (za + zb) / 2 };
-    }).sort((p, q)=> p.depth - q.depth);
-
-    sortedEdges.forEach(({a, b, depth})=>{
-      const depthAlpha = 0.3 + (1 - (depth + 200) / 400) * 0.7;
-      const finalAlpha = Math.max(0, Math.min(1, depthAlpha)) * scrollFade;
-      ctx.strokeStyle = `rgba(212, 175, 55, ${(finalAlpha * 0.5).toFixed(3)})`;
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(projected[a][0], projected[a][1]);
-      ctx.lineTo(projected[b][0], projected[b][1]);
-      ctx.stroke();
-    });
-
-    // Draw outer vertices as nodes
-    projected.forEach(p=>{
-      const depthAlpha = Math.max(0.3, 1 - (p[2] + 200) / 400);
-      const finalAlpha = depthAlpha * scrollFade;
-      const radius = 2 + Math.sin(time * 2 + p[0]) * 0.5;
-      ctx.fillStyle = `rgba(232, 203, 106, ${finalAlpha.toFixed(3)})`;
-      ctx.beginPath();
-      ctx.arc(p[0], p[1], radius, 0, Math.PI * 2);
-      ctx.fill();
-      // Glow
-      const gradient = ctx.createRadialGradient(p[0], p[1], 0, p[0], p[1], 12);
-      gradient.addColorStop(0, `rgba(212, 175, 55, ${(finalAlpha * 0.4).toFixed(3)})`);
-      gradient.addColorStop(1, 'rgba(212, 175, 55, 0)');
-      ctx.fillStyle = gradient;
-      ctx.fillRect(p[0] - 12, p[1] - 12, 24, 24);
-    });
-
-    // Draw inner test-pyramid in oxblood
-    const innerProjected = innerVerts.map(v=>{
-      const r = rotate(v, rotX + autoX * 0.5, rotY + autoY * 0.5, -rotZ * 0.7);
-      return project(r);
-    });
-
-    const sortedInnerEdges = innerEdges.map(([a,b])=>{
-      const za = innerProjected[a][2], zb = innerProjected[b][2];
-      return { a, b, depth: (za + zb) / 2 };
-    }).sort((p, q)=> p.depth - q.depth);
-
-    sortedInnerEdges.forEach(({a, b, depth})=>{
-      const depthAlpha = 0.4 + (1 - (depth + 100) / 200) * 0.6;
-      const finalAlpha = Math.max(0, Math.min(1, depthAlpha)) * scrollFade;
-      ctx.strokeStyle = `rgba(122, 14, 14, ${(finalAlpha * 0.65).toFixed(3)})`;
-      ctx.lineWidth = 1.2;
-      ctx.beginPath();
-      ctx.moveTo(innerProjected[a][0], innerProjected[a][1]);
-      ctx.lineTo(innerProjected[b][0], innerProjected[b][1]);
-      ctx.stroke();
-    });
-
-    // Inner peak vertex — bright accent
-    const peak = innerProjected[0];
-    const peakAlpha = scrollFade;
-    ctx.fillStyle = `rgba(232, 203, 106, ${peakAlpha.toFixed(3)})`;
-    ctx.beginPath();
-    ctx.arc(peak[0], peak[1], 3 + Math.sin(time * 3) * 0.8, 0, Math.PI * 2);
-    ctx.fill();
-
-    requestAnimationFrame(draw);
-  }
-
-  // Activate after curtain fades
-  let drawRunning = false;
-  function startDraw(){
-    if(drawRunning || document.hidden) return;
-    drawRunning = true;
-    draw();
-  }
-  // Mark the loop stopped whenever the page hides, and resume on show.
-  document.addEventListener('visibilitychange', ()=>{
-    if(document.hidden){
-      drawRunning = false;        // draw() will return early and stop scheduling
-    } else {
-      startDraw();
-    }
-  });
-  setTimeout(()=>{
-    hero3d.classList.add('ready');
-    startDraw();
-  }, 1500);
 }
 
 // ============== SMART CURSOR (extended states) ==============

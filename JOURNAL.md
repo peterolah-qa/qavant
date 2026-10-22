@@ -34,6 +34,8 @@ Newest entries at the bottom. Each entry: **what**, **why**, **how verified**.
 | D13 | Availability indicator = one config flag; copy per language, no mixed SK/EN. | "Available ihneď k dispozícii" mixed languages. |
 | D14 | Contact form: service chips are styled checkboxes, same field `name`s. | Keeps Netlify Forms + `contact-form.spec.ts` working. |
 | D15 | GitHub access request drawer → separate roadmap item after redesign. | New feature, not redesign; keeps scope tight. |
+| D17 | Hero pipeline built as HTML nodes + SVG links/particles in CSS perspective, **no Three.js**. | Same depth/parallax effect at 0 kB of dependencies; text stays crisp DOM text (axe-readable, i18n-safe). Revisit only if a real 3D need appears. |
+| D18 | Hero HUD lists all 4 suites incl. stale/fail states; release gate = PASS / PASS·stale / BLOCKED derived from them. | Honest state beats a green-only demo. |
 | D16 | Rejected from second spec: cyan `#00F0FF` + glow, hardcoded `126 passed in 1.8s`, Geist font. | Conflict with D1–D4; Inter + JetBrains Mono already self-hosted. |
 
 ### Constraints noted
@@ -60,3 +62,27 @@ Newest entries at the bottom. Each entry: **what**, **why**, **how verified**.
 **Verified**
 - Full-page screenshot at 1440 px reviewed: no leftover blue/navy, text contrast OK on all bands.
 - Remaining raw hex outside `:root`: LinkedIn brand `#0A66C2`, SVG literals (architecture diagram, step 3).
+
+---
+
+## 2026-10-22 — Step 2/5: Hero — CI/CD DAG + live HUD
+
+**What**
+- Removed curtain (1.4 s) and boot loader (2.4 s) + their CSS/JS. Hero text visible on first paint (was hidden ~2.4 s → better LCP).
+- Removed old canvas octahedron (`#hero3d` canvas, ~230 lines JS) and scripted fake terminal (`termLines`, hardcoded timings like `3.1s`, `contrast 3.43`).
+- New right column `#pipelineCard`:
+  - DAG `git push → CI build → Playwright | Selenium | Newman → k6 gate → release`. Wrapper keeps `id="hero3d"` (smoke test expects exactly one; axe excludes it).
+  - Links + particles in SVG computed from node layout (`offset*`, so the tilt never skews links). Mint particles = assertions to the gate, blue = telemetry. Failing suite → red node + red link, flow stops, release `blocked`.
+  - Mouse tilt ±6°; off for touch, `prefers-reduced-motion`, ≤ 700 px (static diagram, no particles). Animation pauses offscreen / hidden tab.
+  - HUD `#terminal` / `#termBody` (ids kept) renders `qavant status --live` from all 4 `status.json`; each row links to that suite's GitHub Actions workflow; stale (> 14 days) shown as stale.
+- One shared fetch per suite (`suitesReady`) feeds HUD, DAG and the existing `#liveMetrics` cards. Added Selenium + k6 sources.
+- New i18n key `hud.note` (SK/EN/DE).
+
+**Data findings (real status.json, 2026-10-22)**
+- playwright 126/126 · newman 27/27 · selenium 11/11 (last run 2026-09-09 → stale) · k6 285/285 checks.
+- `qavant-perf` load target is `https://test.k6.io`, not qavant.dev → README's "SLO for qavant.dev" claim does not match. HUD shows only check pass count, no p95. **Todo:** point k6 at qavant.dev (separate perf-repo task).
+- "126 passed in 1.8s" from the spec: count is real, duration is not reported by any suite → not shown.
+
+**Verified**
+- Screenshots 1440 px + 390 px with mocked real status.json: no console errors.
+- Forced failure (newman 127/27): node/link red, flow stops, gate `BLOCKED`.
