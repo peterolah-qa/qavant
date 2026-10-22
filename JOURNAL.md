@@ -41,7 +41,7 @@ Newest entries at the bottom. Each entry: **what**, **why**, **how verified**.
 | D16 | Rejected from second spec: cyan `#00F0FF` + glow, hardcoded `126 passed in 1.8s`, Geist font. | Conflict with D1–D4; Inter + JetBrains Mono already self-hosted. |
 
 ### Constraints noted
-- `qavant-tests/tests/visual.spec.ts` = screenshot baselines → will fail by design after redesign; baselines must be regenerated in the same PR.
+- `qavant-tests/tests/visual.spec.ts` (@visual) is excluded from the blocking run and has **no committed baselines** → nothing to regenerate (corrected in step 4).
 - No push access from the Claude session → work delivered as a patch, pushed by Peter.
 
 ---
@@ -112,3 +112,21 @@ Newest entries at the bottom. Each entry: **what**, **why**, **how verified**.
 
 **Verified**
 - Screenshots: all 3 IDE editors, matrix, merged Background, contact. No console errors.
+
+---
+
+## 2026-10-22 — Step 4/5: Verification
+
+**Playwright (qavant-tests, branch `redesign/phosphor-mint`, `ENV=qa` → local build on :8000)**
+- **84 / 84 passed** — projects `chromium` + `mobile-chrome` (Pixel 5), 42 tests each, `--retries=0`.
+- Covers smoke (incl. `#hero3d` count, all sections, ISTQB link, zero console errors), axe-core WCAG 2 A/AA in SK/EN/DE, i18n completeness + no key leaks + DE overflow, contact form + data-driven validation, responsive 360 px, reduced motion, SEO/JSON-LD, API↔UI metrics consistency.
+- Not run here: `firefox`, `webkit`, `mobile-safari` — browser downloads blocked in this sandbox. CI runs firefox on push.
+- Note: 126 = 42 tests × 3 CI projects; 210 = 42 × 5 projects locally. Both README numbers are right, they count different project sets.
+
+**Visual @visual**
+- No baselines exist in the repo (tests write "actual" on first run) → nothing broken, nothing to update. Generate on Linux/CI if wanted: `npm run test:visual:update`.
+
+**Selenium (qavant-selenium)**
+- Full run impossible here (Maven Central unreachable from sandbox).
+- Static check: all 11 locators resolved against the new DOM — 10 match; `By.id("boot")` → 0, but `HomePage.open()` waits on `invisibilityOfElementLocated(boot)` which is `true` for an absent element → passes. Cleanup (dead wait) optional.
+- **Todo for Peter:** run `mvn test -DbaseUrl=…` against the Netlify deploy preview before merge.

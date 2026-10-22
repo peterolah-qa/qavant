@@ -44,7 +44,7 @@ create "Redesign 4/5: Keep test contract — selectors, i18n, form, metrics" \
 "Redesign must not break qavant-tests (Playwright) and qavant-selenium. Keep IDs / data-i18n keys / form names, or update suites in the same PR.
 
 **Acceptance**
-- [ ] 210 Playwright tests green on local build (ENV=qa)
+- [ ] All Playwright tests green on local build (ENV=qa) — 42 tests × every project
 - [ ] 11 Selenium tests green"
 
 create "Redesign 5/5: Verify + ship" \
