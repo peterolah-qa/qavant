@@ -27,11 +27,9 @@ Newest entries at the bottom. Each entry: **what**, **why**, **how verified**.
 | D6 | Keep existing IDs, `data-i18n` keys and form field names. | Playwright (210) and Selenium (11) suites target them. Goal: redesign without a single red test. |
 | D7 | Remove boot loader, interlude and second mid-CTA; merge manifesto into Background. | Less talk between proofs. |
 | D8 | Favicon: dark squircle, steel Q ring, mint checkmark as the Q tail; centre dot only ≥ 48 px. | Dot merges into the ring at 16 px. |
-
 | D9 | Framework IDE ("Pohľad pod kapotu"): 3 suite tabs, each with its own editor chrome — Selenium Java (IntelliJ, `BasePage.java`), REST API (Newman CLI), Playwright TS (VS Code). Window title, file tabs, code and status bar switch together. | Shows three stacks as three real tools, not one generic editor. |
 | D10 | Active tab = mint indicator + border, not cyan `#00F0FF` glow. | Consistent with D1–D3; no neon glow. |
 | D11 | Proposed fintech files (`fintech-auth.postman_collection.json`, `transfer.spec.ts`, SEPA, OTP) **do not exist** in qavant-api-tests / qavant-tests. Today's IDE shows real repo files. → **Resolved: real excerpts from the repos only.** | A "GitHub ↗" link next to code that isn't in the repo is the same proof problem as D4. |
-
 | D12 | ISTQB CTFL v4 badge shows cert no. `2024-01382` (confirmed real by Peter), links to verification. | Verifiable credential > logo. |
 | D13 | Availability indicator = one config flag; copy per language, no mixed SK/EN. | "Available ihneď k dispozícii" mixed languages. |
 | D14 | Contact form: service chips are styled checkboxes, same field `name`s. | Keeps Netlify Forms + `contact-form.spec.ts` working. |
